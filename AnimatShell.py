@@ -93,8 +93,8 @@ class WheelAnimat(Animat):
         self.direc = self.direc + (new_theta/4.0)
         if not self.Eating:
             if M1_sum != 0 or M2_sum != 0:
-                self.pos = self.pos + [(((M1_sum+M2_sum)/2.0)+1)*math.cos(self.direc)*.005, (((M1_sum+M2_sum)/2.0)+1)*math.sin(self.direc)*.005]
-                self.Energy = self.Energy - (self.cMotionEnergy * (((M1_sum+M2_sum)/2.0)+1)) - self.kBasalEnergy
+                self.pos = self.pos + [(((M1_sum+M2_sum)/2.0)+1)*math.cos(self.direc)*.005, (((M1_sum+M2_sum)/2s.0)+1)*math.sin(self.direc)*.005]
+                self.Energy = self.Energy - (self.cMotionEnergy * M1_sum+M2_sum) - self.kBasalEnergy
         else:
             self.pos = self.pos
             self.Energy = self.Energy - self.kBasalEnergy
