@@ -24,6 +24,7 @@ class Network:
     #kwargs used for evo driver
      def __init__(self,R_center,L_center,R_radii,L_radii): # mixture of neuron parameters and initializing network numbers
          #some constants/tracking numbers
+         print 'this is the new network branch'
          self.FIRED_VALUE = 30 # mV
          self.DT = 1 # ms
          self.numExcitatory = 0
@@ -445,11 +446,11 @@ class Network:
 
          newM1 = 0 if(self.v[self.motorNeurons[0]] <= 30) else 1    #(self.v[self.motorNeurons[0]]) # returns 0 if motorNeuron doesn't fire and 1 if it does
          if newM1 == 1:
-             self.motor_neuron1_count += 1
+            self.motor_neuron1_count += 1
          newM2 = 0 if(self.v[self.motorNeurons[1]] <= 30) else 1    #(self.v[self.motorNeurons[1]]) # returns 0 if motorNeuron doesn't fire and 1 if it does
          if newM2 == 1:
             self.motor_neuron2_count += 1
-         self.count += 1
+         # self.count += 1
 
 
          self.M1_fp= self.M1_fp[:7] # firing pattern of motor neuron 1, M1_fp[0] is the most recent 0/1 and M1_fp[3] gets left, only last three 0/1's are stored at this point
@@ -487,8 +488,8 @@ class Network:
          # print '{:36s}{:2s}{:12.4f}{:12.4f}'.format('self.I[self.motorNeurons]',': ', self.I[self.motorNeurons[0]],self.I[self.motorNeurons[1]])
          # print '{:36s}{:2s}{:12.4f}{:12.4f}'.format('self.v[self.motorNeurons]',': ', self.v[self.motorNeurons[0]],self.v[self.motorNeurons[1]]), '\n'
 
-         print self.motor_neuron1_count, self.motor_neuron2_count
-         print self.count
+         # print self.motor_neuron1_count, self.motor_neuron2_count
+         # print self.count
          return sum(self.M1adjusted),sum(self.M2adjusted)   # returns the adjusted sum of the M_fp's (a+(b*.8)+(c*.64)+(d*.512))
 
 

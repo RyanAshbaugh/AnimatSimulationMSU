@@ -93,7 +93,7 @@ class WheelAnimat(Animat):
         self.direc = self.direc + (new_theta/4.0)
         if not self.Eating:
             if M1_sum != 0 or M2_sum != 0:
-                self.pos = self.pos + [(((M1_sum+M2_sum)/2.0)+1)*math.cos(self.direc)*.005, (((M1_sum+M2_sum)/2s.0)+1)*math.sin(self.direc)*.005]
+                self.pos = self.pos + [(((M1_sum+M2_sum)/2.0)+1)*math.cos(self.direc)*.005, (((M1_sum+M2_sum)/2.0)+1)*math.sin(self.direc)*.005]
                 self.Energy = self.Energy - (self.cMotionEnergy * M1_sum+M2_sum) - self.kBasalEnergy
         else:
             self.pos = self.pos
@@ -117,6 +117,7 @@ class WheelAnimat(Animat):
 
 
     def smell(self, foods):
+        self.count += 1
         smell_loc_A = []
         smell_str_A = []
         smell_loc_B = []
@@ -169,16 +170,26 @@ class WheelAnimat(Animat):
         #     print 't', self.count
         #     print 'total_smell_A', '\n', total_smell_A
 
-        print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('# of times sense_A fired',': '\
-                                                                                                         ,self.net.Afired()[0],self.net.Afired()[1],self.net.Afired()[2]\
-                                                                                                         ,self.net.Afired()[3],self.net.Afired()[4],self.net.Afired()[5]\
-                                                                                                         ,self.net.Afired()[6],self.net.Afired()[7],self.net.Afired()[8]\
-                                                                                                         ,self.net.Afired()[9])
-        print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('# of times sense_B fired',': '\
-                                                                                                         ,self.net.Bfired()[0],self.net.Bfired()[1],self.net.Bfired()[2]\
-                                                                                                         ,self.net.Bfired()[3],self.net.Bfired()[4],self.net.Bfired()[5]\
-                                                                                                         ,self.net.Bfired()[6],self.net.Bfired()[7],self.net.Bfired()[8]\
-                                                                                                         ,self.net.Bfired()[9])
+        if self.count > 1000:
+            print 'scipy.spatial.distance.cdist(worldPos_A, smell_loc_A )', '\n', scipy.spatial.distance.cdist(worldPos_A, smell_loc_A )
+            print 'scipy.spatial.distance.cdist(worldPos_B, smell_loc_B )', '\n', scipy.spatial.distance.cdist(worldPos_B, smell_loc_B )
+            print 'self.gaussian(scipy.spatial.distance.cdist(worldPos_A, smell_loc_A )', '\n', self.gaussian(scipy.spatial.distance.cdist(worldPos_A, smell_loc_A ), 0, 3)
+            print 'self.gaussian(scipy.spatial.distance.cdist(worldPos_B, smell_loc_B )', '\n', self.gaussian(scipy.spatial.distance.cdist(worldPos_B, smell_loc_B ), 0, 3)
+            print 'np.sum(self.gaussian(scipy.spatial.distance.cdist(worldPos_A, smell_loc_A ), 0, 3),axis=1)', '\n', np.sum(self.gaussian(scipy.spatial.distance.cdist(worldPos_A, smell_loc_A ), 0, 3),axis=1)
+            print 'np.sum(self.gaussian(scipy.spatial.distance.cdist(worldPos_B, smell_loc_B ), 0, 3),axis=1)', '\n', np.sum(self.gaussian(scipy.spatial.distance.cdist(worldPos_B, smell_loc_B ), 0, 3),axis=1)
+            print 'total_smell_A', '\n', total_smell_A
+            print 'total_smell_B', '\n', total_smell_B, '\n'
+
+        # print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('# of times sense_A fired',': '\
+        #                                                                                                  ,self.net.Afired()[0],self.net.Afired()[1],self.net.Afired()[2]\
+        #                                                                                                  ,self.net.Afired()[3],self.net.Afired()[4],self.net.Afired()[5]\
+        #                                                                                                  ,self.net.Afired()[6],self.net.Afired()[7],self.net.Afired()[8]\
+        #                                                                                                  ,self.net.Afired()[9])
+        # print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('# of times sense_B fired',': '\
+        #                                                                                                  ,self.net.Bfired()[0],self.net.Bfired()[1],self.net.Bfired()[2]\
+        #                                                                                                  ,self.net.Bfired()[3],self.net.Bfired()[4],self.net.Bfired()[5]\
+        #                                                                                                  ,self.net.Bfired()[6],self.net.Bfired()[7],self.net.Bfired()[8]\
+        #                                                                                                  ,self.net.Bfired()[9])
 
         # print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('self.net.I[self.net.senseNeurons_A]',': '\
         #                                                                                                  ,sna[0],sna[1],sna[2],sna[3],sna[4],sna[5],sna[6],sna[7],sna[8],sna[9])
