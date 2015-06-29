@@ -18,13 +18,13 @@ import math
 import numpy as np
 import random
 import SimParam
+print 'this is the new branch'
 
 class Network:
 
     #kwargs used for evo driver
      def __init__(self,R_center,L_center,R_radii,L_radii): # mixture of neuron parameters and initializing network numbers
          #some constants/tracking numbers
-         print 'this is the new network branch'
          self.FIRED_VALUE = 30 # mV
          self.DT = 1 # ms
          self.numExcitatory = 0
