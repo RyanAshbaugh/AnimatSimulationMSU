@@ -5,7 +5,7 @@ Simulates brain, contains all neurons
 
 
 
-
+ #IAM JAMES
 '''
 
 from NeuronModule import InhibitoryNeuron
