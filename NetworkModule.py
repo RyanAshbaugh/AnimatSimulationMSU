@@ -306,21 +306,21 @@ class Network:
                  if connectionWeight <= (3.0/2.0): connectionWeight = 0
                  self.S[n1,n2] = connectionWeight
 
-         for item in neuronIndices:
-             print item, 'R', self._neurons[item].r, 'L', self._neurons[item].l
+         # for item in neuronIndices:
+         #     print item, 'R', self._neurons[item].r, 'L', self._neurons[item].l
 
          # print 'self.x0', self.x0, 'self.y0', self.x0, 'self.sigma', self.sigma
-         print 'self.excitatoryNeurons', self.excitatoryNeurons
-         print 'self.senseNeurons_A', self.senseNeurons_A
-         print 'self.senseNeurons_B', self.senseNeurons_B
-         print 'self.motorNeurons', self.motorNeurons
-         print 'self.hungerNeuron', self.hungerNeurons
+         # print 'self.excitatoryNeurons', self.excitatoryNeurons
+         # print 'self.senseNeurons_A', self.senseNeurons_A
+         # print 'self.senseNeurons_B', self.senseNeurons_B
+         # print 'self.motorNeurons', self.motorNeurons
+         # print 'self.hungerNeuron', self.hungerNeurons
          # print 'a', self.S[self.senseNeurons_A]
          # print 'b', self.S[self.senseNeurons_B]
          # initialize I
          self.I = 2*np.ones( (self.totalNum), dtype = np.float32 ) # should be in initialization
          np.set_printoptions(edgeitems=100)
-         print self.S
+         # print self.S
          # for index in neuronIndices:
          #    print index, '\n', self._neurons[index], '\n', self.S[:,index]
 
