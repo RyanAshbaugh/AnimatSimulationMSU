@@ -218,16 +218,16 @@ class Network:
          return (self.v >= self.FIRED_VALUE).nonzero()
 
      def getNeurons(self):  #populates neuron objects with vectorized data so that upper levels (e.g. GUIDriver) can use them in an OO manner
-         for i in range(0, len(self._neurons)):
-             self._neurons[i].index = i
-             self._neurons[i].a = self.a[i]
-             self._neurons[i].b = self.b[i]
-             self._neurons[i].membranePotential = self.v[i]
-             self._neurons[i].c = self.c[i]
-             self._neurons[i].d = self.d[i]
-             self._neurons[i].u = self.u[i]
+         for i in range(0, len(self.indices_list)):
+             self.indices_list[i].index = i
+             self.indices_list[i].a = self.a[i]
+             self.indices_list[i].b = self.b[i]
+             self.indices_list[i].membranePotential = self.v[i]
+             self.indices_list[i].c = self.c[i]
+             self.indices_list[i].d = self.d[i]
+             self.indices_list[i].u = self.u[i]
 
-         return self._neurons
+         return self.indices_list
 
 
      def runNetwork(self,t,dt): # runs Izhikevich model code
