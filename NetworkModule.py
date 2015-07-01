@@ -24,7 +24,7 @@ class Network:
     #kwargs used for evo driver
      def __init__(self,R_center,L_center,R_radii,L_radii): # mixture of neuron parameters and initializing network numbers
          #some constants/tracking numbers
-         print 'this is the new network branch'
+         print 'this is the master/origin branch'
          self.FIRED_VALUE = 30 # mV
          self.DT = 1 # ms
          self.numExcitatory = 0
