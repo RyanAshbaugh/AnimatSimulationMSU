@@ -18,7 +18,7 @@ import math
 import numpy as np
 import random
 import SimParam
-print 'this is the new branch'
+print 'this is the new network module'
 
 class Network:
 
