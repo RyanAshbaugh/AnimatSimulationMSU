@@ -109,7 +109,7 @@ class Network:
 
 
      #maybe add to OO... then let the network rebuild..?
-     def add_neuron(self, type, pos, sensitivity = 100): # change 'type' to 'n_type'
+     def add_neuron(self, type, pos, sensitivity = 1): # change 'type' to 'n_type'
          if type == 'inhibitory':
              loc = self.numInhibitory
              self._neurons.insert(loc, InhibitoryNeuron(pos[0], pos[1], 0)) # insert because mutable
@@ -371,17 +371,6 @@ class Network:
 
      def runNetwork(self,t,dt): # runs Izhikevich model code
 
-         # print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('self.v[self.senseNeurons_A1]',': '\
-         #                                                                                                            ,self.v[self.senseNeurons_A][0],self.v[self.senseNeurons_A][1],self.v[self.senseNeurons_A][2]\
-         #                                                                                                            ,self.v[self.senseNeurons_A][3],self.v[self.senseNeurons_A][4],self.v[self.senseNeurons_A][5]\
-         #                                                                                                            ,self.v[self.senseNeurons_A][6],self.v[self.senseNeurons_A][7],self.v[self.senseNeurons_A][8]\
-         #                                                                                                            ,self.v[self.senseNeurons_A][9])
-         # print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('self.v[self.senseNeurons_B1]',': '\
-         #                                                                                                            ,self.v[self.senseNeurons_B][0],self.v[self.senseNeurons_B][1],self.v[self.senseNeurons_B][2]\
-         #                                                                                                            ,self.v[self.senseNeurons_B][3],self.v[self.senseNeurons_B][4],self.v[self.senseNeurons_B][5]\
-         #                                                                                                            ,self.v[self.senseNeurons_B][6],self.v[self.senseNeurons_B][7],self.v[self.senseNeurons_B][8]\
-         #                                                                                                            ,self.v[self.senseNeurons_B][9])
-
          self.fired = (self.v >= 30).nonzero()[0] # .nonzero() returns indices from 1/0 (T/F) of v >= 30
          self.recentlyFired[self.fired] = 20
 
@@ -426,6 +415,40 @@ class Network:
          self.cap_I = (self.I >= 50).nonzero()[0]
          self.I[self.cap_I] = 50
 
+         print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('self.v[self.senseNeurons_A]',': '\
+                                                                                                                    ,self.v[self.senseNeurons_A][0],self.v[self.senseNeurons_A][1],self.v[self.senseNeurons_A][2]\
+                                                                                                                    ,self.v[self.senseNeurons_A][3],self.v[self.senseNeurons_A][4],self.v[self.senseNeurons_A][5]\
+                                                                                                                    ,self.v[self.senseNeurons_A][6],self.v[self.senseNeurons_A][7],self.v[self.senseNeurons_A][8]\
+                                                                                                                    ,self.v[self.senseNeurons_A][9])
+         print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('self.u[self.senseNeurons_A]',': '\
+                                                                                                                    ,self.u[self.senseNeurons_A][0],self.u[self.senseNeurons_A][1],self.u[self.senseNeurons_A][2]\
+                                                                                                                    ,self.u[self.senseNeurons_A][3],self.u[self.senseNeurons_A][4],self.u[self.senseNeurons_A][5]\
+                                                                                                                    ,self.u[self.senseNeurons_A][6],self.u[self.senseNeurons_A][7],self.u[self.senseNeurons_A][8]\
+                                                                                                                    ,self.u[self.senseNeurons_A][9])
+         print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('self.I[self.senseNeurons_A]',': '\
+                                                                                                                    ,self.I[self.senseNeurons_A][0],self.I[self.senseNeurons_A][1],self.I[self.senseNeurons_A][2]\
+                                                                                                                    ,self.I[self.senseNeurons_A][3],self.I[self.senseNeurons_A][4],self.I[self.senseNeurons_A][5]\
+                                                                                                                    ,self.I[self.senseNeurons_A][6],self.I[self.senseNeurons_A][7],self.I[self.senseNeurons_A][8]\
+                                                                                                                    ,self.I[self.senseNeurons_A][9]), '\n'
+
+         print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('self.v[self.senseNeurons_B]',': '\
+                                                                                                                    ,self.v[self.senseNeurons_B][0],self.v[self.senseNeurons_B][1],self.v[self.senseNeurons_B][2]\
+                                                                                                                    ,self.v[self.senseNeurons_B][3],self.v[self.senseNeurons_B][4],self.v[self.senseNeurons_B][5]\
+                                                                                                                    ,self.v[self.senseNeurons_B][6],self.v[self.senseNeurons_B][7],self.v[self.senseNeurons_B][8]\
+                                                                                                                    ,self.v[self.senseNeurons_B][9])
+         print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('self.u[self.senseNeurons_B]',': '\
+                                                                                                                    ,self.u[self.senseNeurons_B][0],self.u[self.senseNeurons_B][1],self.u[self.senseNeurons_B][2]\
+                                                                                                                    ,self.u[self.senseNeurons_B][3],self.u[self.senseNeurons_B][4],self.u[self.senseNeurons_B][5]\
+                                                                                                                    ,self.u[self.senseNeurons_B][6],self.u[self.senseNeurons_B][7],self.u[self.senseNeurons_B][8]\
+                                                                                                                    ,self.u[self.senseNeurons_B][9])
+         print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('self.I[self.senseNeurons_B]',': '\
+                                                                                                                    ,self.I[self.senseNeurons_B][0],self.I[self.senseNeurons_B][1],self.I[self.senseNeurons_B][2]\
+                                                                                                                    ,self.I[self.senseNeurons_B][3],self.I[self.senseNeurons_B][4],self.I[self.senseNeurons_B][5]\
+                                                                                                                    ,self.I[self.senseNeurons_B][6],self.I[self.senseNeurons_B][7],self.I[self.senseNeurons_B][8]\
+                                                                                                                    ,self.I[self.senseNeurons_B][9]), '\n', '\n'
+
+
+
          self.v=self.v+0.5*(0.04*(self.v**2) + 5*self.v + 140-self.u + self.I)
          self.v=self.v+0.5*(0.04*(self.v**2) + 5*self.v + 140-self.u + self.I)
          self.cap_v = (self.v >= 50).nonzero()[0]
@@ -460,8 +483,6 @@ class Network:
          for i in range(8): # for all four indices in M_fp lists
              self.M1adjusted[i] = self.M1_fp[i]*(.8**i) # gets the adjusted weight of the neuron having fired in the past, 20% reduction for each run in the past
              self.M2adjusted[i] = self.M2_fp[i]*(.8**i) # gets the adjusted weight of the neuron having fired in the past, 20% reduction for each run in the past
-         # if self.M1adjusted != self.M2adjusted:
-         #    print 'sums: ',sum(self.M1adjusted),sum(self.M2adjusted)
 
 
          # print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('self.I[self.senseNeurons_A]',': '\
