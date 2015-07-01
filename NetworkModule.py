@@ -25,18 +25,23 @@ class Network:
     #kwargs used for evo driver
      def __init__(self,R_center,L_center,R_radii,L_radii): # mixture of neuron parameters and initializing network numbers
          #some constants/tracking numbers
-         self.FIRED_VALUE = 30 # mV
-         self.DT = 1 # ms
-         self.numExcitatory = 0
-         self.numInhibitory = 0
-         self.numMotor = 0
-         self.numSensory_A = 0
-         self.numSensory_B = 0
-         self.numHunger = 0
-         self.totalNum = 0
-         self.kSynapseDecay = .7 # Synaptic conductance after 1 ms
-         self.L = 3
-         self.K = 5
+         self.kSynapseDecay = 0.7
+         self.default_a = np.float32(.02)     # sets default values for the Izhikivech variables
+         self.default_b = np.float32(.2)
+         self.default_c = np.float32(-65)
+         self.default_d = np.float32(8)
+         self.default_v = np.float32(-65)
+         self.default_u = self.default_b*self.default_v
+
+         # initialize arrays for the Izhikivech variables
+         self.a = np.array([], dtype = np.float32)
+         self.b = np.array([], dtype = np.float32)
+         self.c = np.array([], dtype = np.float32)
+         self.d = np.array([], dtype = np.float32)
+         self.v = np.array([], dtype = np.float32)
+         self.u= self.b*self.v
+         self.S = np.array([[]], dtype = np.float32) # row-major order; S(2,3) is weight from #2 to #3
+
          self.sense_B_fired = [0 for i in range(10)]
          self.sense_A_fired = [0 for i in range(10)]
          self.M1_fp = [0,0,0,0,0,0,0,0]
@@ -71,258 +76,114 @@ class Network:
              # self.sigma = sigma
 
 
-         #Izhikevich Variables ... do we need 32-bit numbers? try np.float16?
-         self.v = np.array([], dtype = np.float32) # voltage proxy .
-         self.a = np.array([], dtype = np.float32)
-         self.b = np.array([], dtype = np.float32)
-         self.c = np.array([], dtype = np.float32)
-         self.d = np.array([], dtype = np.float32)
-         self.u = self.b*self.v                 # Set initial values of u at ceiling
-         self.S = np.array([[]], dtype = np.float32) # row-major order; S(2,3) is weight from #2 to #3
-
-
-         #'Shadow' Variables
-         self.fireTogetherCount = np.array([], ndmin = 2, dtype = np.float)
-         self.firingCount = np.array([])
-         self.recentlyFired = np.array([], dtype = np.float32)
-         self.justFired = np.array([], dtype = np.int_, ndmin = 2) # this is int64 ... remove _ to make int8 or int16
-
-         #'Shadow' Variable assistants
-         #self.fireTogetherWindow = np.array([])
-         self.firingCount_decay = 0.01
-         self.fireTogetherCount_decay = 0.98
-
-         #other neuron mappings
-         self._neurons = []
-         self.inhibitoryNeurons = np.array([], dtype=np.int_)
-         self.excitatoryNeurons = np.array([], dtype=np.int_)
-         self.motorNeurons = np.array([], dtype=np.int_)
-         self.hungerNeurons = np.array([],dtype=np.int_)
-
          #These will be dictionaries of Lists eventually for different types of sensory neurons!
-         self.senseNeurons_A = np.array([], dtype=np.int_) # holds neuron objects
-         self.senseNeuronLocations_A = np.array([],ndmin=2) # holds locations on animat
-         self.sensitivity_A = np.array([], ndmin = 2) # sensitivity to smell A: hard-coded to 
-         self.senseNeurons_B = np.array([], dtype=np.int_) 
-         self.senseNeuronLocations_B = np.array([],ndmin=2)
+         self.sensitivity_A = np.array([], ndmin = 2) # sensitivity to smell A: hard-coded to
          self.sensitivity_B = np.array([], ndmin = 2)
+         self.indices_list = []        # initializes list to store indices of neurons
+         self.neuron_circle_loc = {'inhibitory':[], 'excitatory':[], 'motor':[], 'sensory_A':[], 'sensory_B':[], 'hunger':[]} # contains indices and xy position [indice, x, y]
 
 
-     #maybe add to OO... then let the network rebuild..?
-     def add_neuron(self, type, pos, sensitivity = 100): # change 'type' to 'n_type'
-         if type == 'inhibitory':
-             loc = self.numInhibitory
-             self._neurons.insert(loc, InhibitoryNeuron(pos[0], pos[1], 0)) # insert because mutable
-             self.inhibitoryNeurons = np.append(self.inhibitoryNeurons, loc) # assigned because np.append doesn't alter its argument
-             self.a = np.insert(self.a, loc, np.float32(0.02))
-             self.b = np.insert(self.b, loc, np.float32(0.2))
-             self.c = np.insert(self.c, loc, np.float32(-65))
-             self.d = np.insert(self.d, loc, np.float32(8))
-             self.v = np.insert(self.v, loc, np.float32(-65))
-             self.numInhibitory += 1
+     def add_neuron(self, typea, neuron_index, position, circle, sensitivity = 100):         #adds specific types of neurons
+         self.a = np.insert(self.a, neuron_index, self.default_a)        # sets a
+         self.b = np.insert(self.b, neuron_index, self.default_b)        # sets b
+         self.c = np.insert(self.c, neuron_index, self.default_c)        # sets c
+         self.d = np.insert(self.d, neuron_index, self.default_d)        # sets d
+         self.v = np.insert(self.v, neuron_index, self.default_v)        # sets v
+         self.u = np.insert(self.u, neuron_index, self.default_u)        # sets u = b*v
+         if typea == 'inhibitory':                    #  can be used later to change specific variables for types of neurons
+              circle['inhibitory'].append([neuron_index, position])
+         if typea == 'excitatory':
+              circle['excitatory'].append([neuron_index, position])
+         if typea == 'sensory_A':
+              circle['sensory_A'].append([neuron_index, position])
+              self.sensitivity_A = np.append(self.sensitivity_A, sensitivity)
+         if typea == 'sensory_B':
+              circle['sensory_B'].append([neuron_index, position])
+              self.sensitivity_B = np.append(self.sensitivity_B, sensitivity)
+         if typea == 'motor':
+              circle['motor'].append([neuron_index, position])
+         if typea == 'hunger':
+              circle['hunger'].append([neuron_index, position])
 
-             self.excitatoryNeurons += 1 # bumps up all indices - to keep track of locations of neuron types for GUIdriver etc
-             self.motorNeurons += 1
-             self.senseNeurons_A += 1
-             self.senseNeurons_B += 1
-             self.hungerNeurons += 1
-
-         if type == 'excitatory':
-             loc = self.numExcitatory + self.numInhibitory
-             self._neurons.insert(loc, ExcitatoryNeuron(pos[0], pos[1], 0))
-             self.excitatoryNeurons = np.append(self.excitatoryNeurons, loc)
-             self.a = np.insert(self.a, loc, np.float32(0.02))
-             self.b = np.insert(self.b, loc, np.float32(0.2))
-             self.c = np.insert(self.c, loc, np.float32(-65))
-             self.d = np.insert(self.d, loc, np.float32(8))
-             self.v = np.insert(self.v, loc, np.float32(-65))
-             self.numExcitatory += 1
-
-             self.motorNeurons += 1
-             self.senseNeurons_A += 1
-             self.senseNeurons_B += 1
-             self.hungerNeurons += 1
-
-         if type == 'motor':
-             loc = self.numExcitatory + self.numInhibitory + self.numMotor
-             self._neurons.insert(loc, MotorNeuron(pos[0], pos[1], 0))
-             self.motorNeurons = np.append(self.motorNeurons, loc)
-             self.a = np.insert(self.a, loc, np.float32(0.02))
-             self.b = np.insert(self.b, loc, np.float32(0.2))
-             self.c = np.insert(self.c, loc, np.float32(-65))
-             self.d = np.insert(self.d, loc, np.float32(8))
-             self.v = np.insert(self.v, loc, np.float32(-65))
-             self.numMotor += 1
-
-             self.senseNeurons_A += 1
-             self.senseNeurons_B += 1
-             self.hungerNeurons += 1
-
-         if type == 'sensory_A':
-             loc = self.numExcitatory + self.numInhibitory + self.numMotor + self.numSensory_A
-             self._neurons.insert(loc, SensoryNeuron_A(pos[0], pos[1], 0))
-             self.senseNeurons_A = np.append(self.senseNeurons_A, loc)
-             if self.numSensory_A == 0: self.senseNeuronLocations_A = np.array([pos[0],pos[1]],ndmin=2)
-             else: self.senseNeuronLocations_A = np.insert(self.senseNeuronLocations_A, self.numSensory_A, np.array((pos[0], pos[1])), axis = 0)
-             self.a = np.insert(self.a, loc, np.float32(0.02))
-             self.b = np.insert(self.b, loc, np.float32(0.2))
-             self.c = np.insert(self.c, loc, np.float32(-65))
-             self.d = np.insert(self.d, loc, np.float32(8))
-             self.v = np.insert(self.v, loc, np.float32(-65))
-             self.sensitivity_A = np.append(self.sensitivity_A, sensitivity)
-             self.numSensory_A += 1
-
-             self.senseNeurons_B += 1
-             self.hungerNeurons += 1
-
-         if type == 'sensory_B':
-             loc = self.numExcitatory + self.numInhibitory + self.numMotor + self.numSensory_A + self.numSensory_B
-             self._neurons.insert(loc, SensoryNeuron_B(pos[0], pos[1], 0))
-             self.senseNeurons_B = np.append(self.senseNeurons_B, loc)
-             if self.numSensory_B == 0: self.senseNeuronLocations_B = np.array([pos[0],pos[1]],ndmin=2)
-             else: self.senseNeuronLocations_B = np.insert(self.senseNeuronLocations_B, self.numSensory_B, np.array((pos[0], pos[1])), axis = 0)
-             self.a = np.insert(self.a, loc, np.float32(0.02))
-             self.b = np.insert(self.b, loc, np.float32(0.2))
-             self.c = np.insert(self.c, loc, np.float32(-65))
-             self.d = np.insert(self.d, loc, np.float32(8))
-             self.v = np.insert(self.v, loc, np.float32(-65))
-             self.sensitivity_B = np.append(self.sensitivity_B, sensitivity)
-             self.numSensory_B += 1
-
-             self.hungerNeurons += 1
-
-         if type == 'hunger':
-             loc = self.numExcitatory + self.numInhibitory + self.numMotor + self.numSensory_A + self.numSensory_B + self.numHunger
-             self._neurons.insert(loc, HungerNeuron(pos[0], pos[1], 0))
-             self.hungerNeurons = np.append(self.hungerNeurons, loc)
-             self.a = np.insert(self.a, loc, np.float32(0.02))
-             self.b = np.insert(self.b, loc, np.float32(0.2))
-             self.c = np.insert(self.c, loc, np.float32(-65))
-             self.d = np.insert(self.d, loc, np.float32(8))
-             self.v = np.insert(self.v, loc, np.float32(-65))
-             self.numHunger += 1
-
-         #'Shadow' Variables
-         if(self.totalNum == 0):
-             self.fireTogetherCount = np.array([0], ndmin = 2, dtype = np.float32)
-             self.S = np.array([0], ndmin = 2, dtype = np.float32)
-             #self.justFired = np.array([0],ndmin=2)
-             self.justFired = np.array([0], dtype = np.float32)
-         ## NEEDS FIXING FOR HOW LOC IS DEFINED
-         else:
-             self.fireTogetherCount = np.insert(self.fireTogetherCount, loc, 0, axis = 0)
-             self.fireTogetherCount = np.insert(self.fireTogetherCount, loc, 0, axis = 1)
-
-             self.S = np.insert(self.S, loc, np.float32(0), axis=0)
-             self.S = np.insert(self.S, loc, np.float32(0), axis=1)
-
-             self.justFired = np.insert(self.justFired, loc, np.array([np.float32(0)]), axis = 0)
-
-         self.firingCount = np.insert(self.firingCount, loc, 0)
-         self.recentlyFired = np.insert(self.recentlyFired, loc, np.float32(0))
-
-         self.totalNum += 1
-
-
-         #'Shadow' Variable assistants
-         #self.fireTogetherWindow = np.insert(self.fireTogetherWindow, loc, 1)
-         #self.firingCount_decay = np.array([])
-         #self.fireTogetherCount_decay = np.array([])
-
-         self.u=self.b*self.v # should be here; makes earlier one redundant
 
      def generateNeurons(self):
-         #Generate neurons around the circle
-         for i in xrange(40): # 0 to 39
-             loc = (np.cos(2*np.pi*(i+0.5)/40),np.sin(2*np.pi*(i+0.5)/40))
-             if i < 20: # upper half-circle
-                 if i % 2 == 0:
-                     self.add_neuron("sensory_A",loc)
-                 else:
-                     self.add_neuron("sensory_B",loc)
-             else:
-                 self.add_neuron("excitatory",loc)
-         #Generate hunger and motor neurons
-         self.add_neuron("hunger",(0,0))
-         self.add_neuron("motor",(-1.2,0))
-         self.add_neuron("motor",(1.2,0))
-
-         # print 'self.senseNeurons_A', self.senseNeurons_A
-         # print 'self.senseNeurons_B', self.senseNeurons_B
+          NeuronIndex = 0               # index of neuron
+          for i in xrange(40): # 0 to 39
+               loc = (np.cos(2*np.pi*(i+0.5)/40),np.sin(2*np.pi*(i+0.5)/40))
+               if i < 20: # upper half-circle
+                    if i % 2 == 0:
+                         self.add_neuron("sensory_A", NeuronIndex, loc, self.neuron_circle_loc)
+                    else:
+                         self.add_neuron("sensory_B", NeuronIndex, loc, self.neuron_circle_loc)
+               else:
+                    self.add_neuron("excitatory", NeuronIndex, loc, self.neuron_circle_loc)
+               NeuronIndex += 1
+          #Generate hunger and motor neurons
+          self.add_neuron("hunger", NeuronIndex, (0,0), self.neuron_circle_loc)
+          NeuronIndex += 1
+          self.add_neuron("motor", NeuronIndex, (1.2, 0), self.neuron_circle_loc)
+          NeuronIndex += 1
+          self.add_neuron("motor", NeuronIndex, (-1.2, 0), self.neuron_circle_loc)
+          NeuronIndex += 1
+          temp_value_list = self.neuron_circle_loc.values()
+          for value in temp_value_list:
+               for value2 in value:
+                    if len(value2) > 0:
+                         self.indices_list.append(value2[0])          # appends the indices of the neurons to indices_list
 
      def connectNetwork(self):
          #Parameters
-         A = 2.0
-         B = 20.0
-        
-         #Set up connection variables
-         #set up ligand and receptor lists for each neuron in circle based on parameters
-         for index in np.hstack((self.excitatoryNeurons,self.senseNeurons_A,self.senseNeurons_B)): # make one list
-            x, y = self._neurons[index].X, self._neurons[index].Y
-            rr,ll = [],[]
-            for i in xrange(5):
-                rVal = self.R_radii[i] - np.sqrt( np.square(x - self.R_center[i][0]) + np.square(y - self.R_center[i][1]))
-                lVal = self.L_radii[i] - np.sqrt( np.square(x - self.L_center[i][0]) + np.square(y - self.L_center[i][1]))
-                if rVal < 0.0: rVal = 0.0
-                if lVal < 0.0: lVal = 0.0
-                if rVal != 0:
-                    rVal = random.random()
-                if lVal != 0:
-                    lVal = random.random()
-                rr.append(rVal)
-                ll.append(lVal)
-            self._neurons[index].setRL(rr,ll) # adds the vectors rr, ll to neuron using setRL method in neuronModule.py
+          A = 2.0
+          B = 20.0
 
-         #Set up ligand and receptor lists for each motor neuron and hunger neuron
-         for index in self.hungerNeurons:
-             rr = [0 for i in xrange(5)]
-             ll = [0 for i in xrange(5)]
-             rr[4] = 1
-             self._neurons[index].setRL(rr,ll)
+          #Set up connection variables
+          #set up ligand and receptor lists for each neuron in circle based on parameters
 
-         rr = [0 for i in xrange(5)]
-         ll = [0 for i in xrange(5)]
-         ll[3] = 1 # needs to be changed for L/R difference
-         self._neurons[self.motorNeurons[0]].setRL(rr,ll)
-         # print self._neurons[self.motorNeurons[0]].l
-         # ll[3] = 0
-         # ll[4] = 1
-         llA = [0,0,1,0,0]
-         self._neurons[self.motorNeurons[1]].setRL(rr,llA)
-         # print self._neurons[self.motorNeurons[1]].l
+          # initializes self.S which will later hold connection weights
+          self.S = np.zeros((len(self.indices_list), len(self.indices_list)), dtype = np.float32)
+          rl_array = np.zeros((len(self.indices_list), 10), dtype= np.float32)   # sets up array for receptor and ligand lists, [index, r, r, r, r, r, l, l, l, l, l]
 
+          for type_list in self.neuron_circle_loc['excitatory'], self.neuron_circle_loc['sensory_A'], self.neuron_circle_loc['sensory_B']:
+               for index in type_list:
+                    x, y = index[1][0], index[1][1]         # sets x and y equal to the neurons circle location x y
+                    for i in xrange(5):
+                         rVal = self.R_radii[i] - np.sqrt( np.square(x - self.R_center[i][0]) + np.square(y - self.R_center[i][1]))
+                         lVal = self.L_radii[i] - np.sqrt( np.square(x - self.L_center[i][0]) + np.square(y - self.L_center[i][1]))
+                         if rVal < 0.0: rVal = 0.0
+                         if lVal < 0.0: lVal = 0.0
+                         rl_array[index[0]][i] = rVal
+                         rl_array[index[0]][i+5] = lVal
 
-         # for i in range(len(self._neurons)): print 'r', self._neurons[i].r, 'l', self._neurons[i].l
+          for index in self.neuron_circle_loc['hunger']:
+               rl_array[index[0]][4] = 1
 
-         #Set up connection weights
-         neuronIndices = np.hstack((self.excitatoryNeurons,self.senseNeurons_A,self.senseNeurons_B,self.hungerNeurons,self.motorNeurons))
-         # may be simpler to run through all indices in order, since all classes get treated equally
-         for n1 in neuronIndices:
-             for n2 in neuronIndices:
-                 W = np.sum( np.multiply(self._neurons[n1].r, self._neurons[n2].l))
-                 max_synapse_strength = 30
-                 connectionWeight = max_synapse_strength*np.exp(A* W) / (B + np.exp(A*W))
-                 ### bring in multiplier from runNetwork
-                 if connectionWeight <= (3.0/2.0): connectionWeight = 0
-                 self.S[n1,n2] = connectionWeight
+          for index in self.neuron_circle_loc['motor']:
+               if index[0] % 2 == 0:
+                    rl_array[index[0]][8] = 1
+               if index[0] % 2 != 0:
+                    rl_array[index[0]][9] = 1
 
-         for item in neuronIndices:
-             print item, 'R', self._neurons[item].r, 'L', self._neurons[item].l
+          #Set up connection weights
+          for n1 in self.indices_list:
+               for n2 in self.indices_list:
+                    receptor = rl_array[n1]      # sets receptor equal to list of values in array from corresponding indice
+                    ligand = rl_array[n2]        # sets ligand equal to list of values in array from corresponding indice
+                    # if n1 == 41 or n1== 42:
+                    #      print receptor[:5], ligand[5:]
+                    W = np.sum( np.multiply(receptor[:5], ligand[5:]))
+                    max_synapse_strength = 30
+                    connectionWeight = max_synapse_strength*np.exp(A* W) / (B + np.exp(A*W))
+                    ### bring in multiplier from runNetwork
+                    if connectionWeight <= 3.0/2.0: connectionWeight = 0
+                    rl_array[n1][:5] = receptor[:5]
+                    rl_array[n2][5:] = ligand[5:]
+                    self.S[n1][n2] = connectionWeight
 
-         # print 'self.x0', self.x0, 'self.y0', self.x0, 'self.sigma', self.sigma
-         print 'self.excitatoryNeurons', self.excitatoryNeurons
-         print 'self.senseNeurons_A', self.senseNeurons_A
-         print 'self.senseNeurons_B', self.senseNeurons_B
-         print 'self.motorNeurons', self.motorNeurons
-         print 'self.hungerNeuron', self.hungerNeurons
-         # print 'a', self.S[self.senseNeurons_A]
-         # print 'b', self.S[self.senseNeurons_B]
-         # initialize I
-         self.I = 2*np.ones( (self.totalNum), dtype = np.float32 ) # should be in initialization
-         np.set_printoptions(edgeitems=100)
-         print self.S
-         # for index in neuronIndices:
-         #    print index, '\n', self._neurons[index], '\n', self.S[:,index]
+          np.set_printoptions(edgeitems= 100)
+          print self.S
+          # initialize I
+          self.I = 2*np.ones( (len(self.indices_list)), dtype = np.float32)
+
 
      def copyDynamicState(self): # copies all data for simulation engine 
          state = []
@@ -383,7 +244,6 @@ class Network:
          #                                                                                                            ,self.v[self.senseNeurons_B][9])
 
          self.fired = (self.v >= 30).nonzero()[0] # .nonzero() returns indices from 1/0 (T/F) of v >= 30
-         self.recentlyFired[self.fired] = 20
 
          for i in range(22,32):
              if self.v[i] >= 30:
