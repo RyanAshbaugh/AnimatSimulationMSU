@@ -96,6 +96,7 @@ class EvoDriver():
             sP.setWorld(5,1,15,20,[(random.random()*20 - 20.0/2., random.random()*20 - 20.0/2.) for i in xrange(15)])
             sP.setAnimParams(1,self.IDcntr,self.origin)
             if x0 == -1:
+                # replacement for random generation of variables used to determine synapse connections
                 sP.setR_center(i, [[-.7 + random.randrange(-1, 1, .01),.7 + random.randrange(-1, 1, .01)],[.7 + random.randrange(-1, 1, .01),.7 + random.randrange(-1, 1, .01)],\
                         [.7 + random.randrange(-1, 1, .01),-.7 + random.randrange(-1, 1, .01)],[-.7 + random.randrange(-1, 1, .01),-.7 + random.randrange(-1, 1, .01)],\
                                    [0 + random.randrange(-1, 1, .01),0 + random.randrange(-1, 1, .01)]])
