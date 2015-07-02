@@ -109,7 +109,7 @@ class Network:
 
 
      #maybe add to OO... then let the network rebuild..?
-     def add_neuron(self, type, pos, sensitivity = 1): # change 'type' to 'n_type'
+     def add_neuron(self, type, pos, sensitivity = 2): # change 'type' to 'n_type'
          if type == 'inhibitory':
              loc = self.numInhibitory
              self._neurons.insert(loc, InhibitoryNeuron(pos[0], pos[1], 0)) # insert because mutable
