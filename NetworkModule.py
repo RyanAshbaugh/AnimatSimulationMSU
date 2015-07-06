@@ -25,6 +25,7 @@ class Network:
     #kwargs used for evo driver
      def __init__(self,R_center,L_center,R_radii,L_radii): # mixture of neuron parameters and initializing network numbers
          #some constants/tracking numbers
+         self.FIRED_VALUE = 30 # mV
          self.kSynapseDecay = 0.7
          self.default_a = np.float32(.02)     # sets default values for the Izhikivech variables
          self.default_b = np.float32(.2)
@@ -76,6 +77,17 @@ class Network:
              # self.sigma = sigma
 
 
+         # arrays used for the sense neurons
+         self.senseNeuronLocations_A = np.array([],ndmin=2) # holds locations on animat
+         self.senseNeurons_A = np.array([], dtype=np.int_) # holds neuron indices
+         self.numSensory_A = 0
+         self.senseNeuronLocations_B = np.array([],ndmin=2) # holds locations on animat
+         self.numSensory_B = 0
+         self.senseNeurons_B = np.array([], dtype=np.int_) # holds neuron indices
+         self.motorNeurons = np.array([], dtype=np.int_)
+         self.attribute_list = []
+         self.indices_location = []
+
          #These will be dictionaries of Lists eventually for different types of sensory neurons!
          self.sensitivity_A = np.array([], ndmin = 2) # sensitivity to smell A: hard-coded to
          self.sensitivity_B = np.array([], ndmin = 2)
@@ -83,7 +95,7 @@ class Network:
          self.neuron_circle_loc = {'inhibitory':[], 'excitatory':[], 'motor':[], 'sensory_A':[], 'sensory_B':[], 'hunger':[]} # contains indices and xy position [indice, x, y]
 
 
-     def add_neuron(self, typea, neuron_index, position, circle, sensitivity = 100):         #adds specific types of neurons
+     def add_neuron(self, typea, neuron_index, position, circle, sensitivity = 2):         #adds specific types of neurons
          self.a = np.insert(self.a, neuron_index, self.default_a)        # sets a
          self.b = np.insert(self.b, neuron_index, self.default_b)        # sets b
          self.c = np.insert(self.c, neuron_index, self.default_c)        # sets c
@@ -92,18 +104,27 @@ class Network:
          self.u = np.insert(self.u, neuron_index, self.default_u)        # sets u = b*v
          if typea == 'inhibitory':                    #  can be used later to change specific variables for types of neurons
               circle['inhibitory'].append([neuron_index, position])
+              self.indices_location.append(position)
          if typea == 'excitatory':
               circle['excitatory'].append([neuron_index, position])
+              self.indices_location.append(position)
          if typea == 'sensory_A':
               circle['sensory_A'].append([neuron_index, position])
               self.sensitivity_A = np.append(self.sensitivity_A, sensitivity)
+              self.senseNeurons_A = np.append(self.senseNeurons_A, neuron_index)
+              self.indices_location.append(position)
          if typea == 'sensory_B':
               circle['sensory_B'].append([neuron_index, position])
               self.sensitivity_B = np.append(self.sensitivity_B, sensitivity)
+              self.senseNeurons_B = np.append(self.senseNeurons_B, neuron_index)
+              self.indices_location.append(position)
          if typea == 'motor':
               circle['motor'].append([neuron_index, position])
+              self.motorNeurons = np.append(self.motorNeurons, neuron_index)
+              self.indices_location.append(position)
          if typea == 'hunger':
               circle['hunger'].append([neuron_index, position])
+              self.indices_location.append(position)
 
 
      def generateNeurons(self):
@@ -113,8 +134,14 @@ class Network:
                if i < 20: # upper half-circle
                     if i % 2 == 0:
                          self.add_neuron("sensory_A", NeuronIndex, loc, self.neuron_circle_loc)
+                         if self.numSensory_A == 0: self.senseNeuronLocations_A = np.array([loc[0],loc[1]],ndmin=2)
+                         else: self.senseNeuronLocations_A = np.insert(self.senseNeuronLocations_A, self.numSensory_A, np.array((loc[0], loc[1])), axis = 0)
+                         self.numSensory_A += 1
                     else:
                          self.add_neuron("sensory_B", NeuronIndex, loc, self.neuron_circle_loc)
+                         if self.numSensory_B == 0: self.senseNeuronLocations_B = np.array([loc[0],loc[1]],ndmin=2)
+                         else: self.senseNeuronLocations_B = np.insert(self.senseNeuronLocations_B, self.numSensory_B, np.array((loc[0], loc[1])), axis = 0)
+                         self.numSensory_B += 1
                else:
                     self.add_neuron("excitatory", NeuronIndex, loc, self.neuron_circle_loc)
                NeuronIndex += 1
@@ -180,7 +207,7 @@ class Network:
                     self.S[n1][n2] = connectionWeight
 
           np.set_printoptions(edgeitems= 100)
-          print self.S
+          # print self.S
           # initialize I
           self.I = 2*np.ones( (len(self.indices_list)), dtype = np.float32)
 
@@ -219,15 +246,20 @@ class Network:
 
      def getNeurons(self):  #populates neuron objects with vectorized data so that upper levels (e.g. GUIDriver) can use them in an OO manner
          for i in range(0, len(self.indices_list)):
-             self.indices_list[i].index = i
-             self.indices_list[i].a = self.a[i]
-             self.indices_list[i].b = self.b[i]
-             self.indices_list[i].membranePotential = self.v[i]
-             self.indices_list[i].c = self.c[i]
-             self.indices_list[i].d = self.d[i]
-             self.indices_list[i].u = self.u[i]
+             self.attribute_list.append([i, self.indices_location[i], self.a, self.b, self.v, self.c, self.d, self.u])
+         return self.attribute_list
 
-         return self.indices_list
+
+
+         #     self.indices_list[i].index = i
+         #     self.indices_list[i].a = self.a[i]
+         #     self.indices_list[i].b = self.b[i]
+         #     self.indices_list[i].membranePotential = self.v[i]
+         #     self.indices_list[i].c = self.c[i]
+         #     self.indices_list[i].d = self.d[i]
+         #     self.indices_list[i].u = self.u[i]
+         #
+         # return self.indices_list
 
 
      def runNetwork(self,t,dt): # runs Izhikevich model code
