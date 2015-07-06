@@ -237,11 +237,7 @@ class Network:
          #                                                                                                            ,self.v[self.senseNeurons_A][3],self.v[self.senseNeurons_A][4],self.v[self.senseNeurons_A][5]\
          #                                                                                                            ,self.v[self.senseNeurons_A][6],self.v[self.senseNeurons_A][7],self.v[self.senseNeurons_A][8]\
          #                                                                                                            ,self.v[self.senseNeurons_A][9])
-         # print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('self.v[self.senseNeurons_B1]',': '\
-         #                                                                                                            ,self.v[self.senseNeurons_B][0],self.v[self.senseNeurons_B][1],self.v[self.senseNeurons_B][2]\
-         #                                                                                                            ,self.v[self.senseNeurons_B][3],self.v[self.senseNeurons_B][4],self.v[self.senseNeurons_B][5]\
-         #                                                                                                            ,self.v[self.senseNeurons_B][6],self.v[self.senseNeurons_B][7],self.v[self.senseNeurons_B][8]\
-         #                                                                                                            ,self.v[self.senseNeurons_B][9])
+
 
          self.fired = (self.v >= 30).nonzero()[0] # .nonzero() returns indices from 1/0 (T/F) of v >= 30
 
@@ -261,21 +257,7 @@ class Network:
          newI = np.sum(self.S[self.fired],axis=0)
          # np.set_printoptions(edgeitems=100)
          # print self.S
-         # print np.sum(self.S[self.fired],axis=0)
-         # print 'np.sum(self.S[self.senseNeurons_A],axis=0): ', np.sum(self.S[self.senseNeurons_A],axis=0)
-         # print 'np.sum(self.S[self.senseNeurons_A],axis=0)*self.voltIncr: ', (np.sum(self.S[self.senseNeurons_A],axis=0)*self.voltIncr)
-         # print 'np.sum(self.S[self.senseNeurons_B],axis=0): ', np.sum(self.S[self.senseNeurons_B],axis=0)
-         # print 'np.sum(self.S[self.senseNeurons_B],axis=0)*self.voltIncr: ', (np.sum(self.S[self.senseNeurons_B],axis=0)*self.voltIncr)
-         # print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('newI[self.senseNeurons_A]',': '\
-         #                                                                                                            ,newI[self.senseNeurons_A][0],newI[self.senseNeurons_A][1],newI[self.senseNeurons_A][2]\
-         #                                                                                                            ,newI[self.senseNeurons_A][3],newI[self.senseNeurons_A][4],newI[self.senseNeurons_A][5]\
-         #                                                                                                            ,newI[self.senseNeurons_A][6],newI[self.senseNeurons_A][7],newI[self.senseNeurons_A][8]\
-         #                                                                                                            ,newI[self.senseNeurons_A][9])
-         # print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('newI[self.senseNeurons_B]',': '\
-         #                                                                                                            ,newI[self.senseNeurons_B][0],newI[self.senseNeurons_B][1],newI[self.senseNeurons_B][2]\
-         #                                                                                                            ,newI[self.senseNeurons_B][3],newI[self.senseNeurons_B][4],newI[self.senseNeurons_B][5]\
-         #                                                                                                            ,newI[self.senseNeurons_B][6],newI[self.senseNeurons_B][7],newI[self.senseNeurons_B][8]\
-         #                                                                                                            ,newI[self.senseNeurons_B][9])
+
          # tempNewIlista = (newI[self.senseNeurons_A] >= 20).nonzero()[0]
          # tempNewIlistb = (newI[self.senseNeurons_B] >= 20).nonzero()[0]
          # if len(tempNewIlista)>0 or len(tempNewIlistb)>0:
@@ -329,24 +311,7 @@ class Network:
          #                                                                                                            ,self.I[self.senseNeurons_A][3],self.I[self.senseNeurons_A][4],self.I[self.senseNeurons_A][5]\
          #                                                                                                            ,self.I[self.senseNeurons_A][6],self.I[self.senseNeurons_A][7],self.I[self.senseNeurons_A][8]\
          #                                                                                                            ,self.I[self.senseNeurons_A][9])
-         # print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('self.I[self.senseNeurons_B]',': '\
-         #                                                                                                            ,self.I[self.senseNeurons_B][0],self.I[self.senseNeurons_B][1],self.I[self.senseNeurons_B][2]\
-         #                                                                                                            ,self.I[self.senseNeurons_B][3],self.I[self.senseNeurons_B][4],self.I[self.senseNeurons_B][5]\
-         #                                                                                                            ,self.I[self.senseNeurons_B][6],self.I[self.senseNeurons_B][7],self.I[self.senseNeurons_B][8]\
-         #                                                                                                            ,self.I[self.senseNeurons_B][9])
-         #
-         # print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('self.v[self.senseNeurons_A]',': '\
-         #                                                                                                            ,self.v[self.senseNeurons_A][0],self.v[self.senseNeurons_A][1],self.v[self.senseNeurons_A][2]\
-         #                                                                                                            ,self.v[self.senseNeurons_A][3],self.v[self.senseNeurons_A][4],self.v[self.senseNeurons_A][5]\
-         #                                                                                                            ,self.v[self.senseNeurons_A][6],self.v[self.senseNeurons_A][7],self.v[self.senseNeurons_A][8]\
-         #                                                                                                            ,self.v[self.senseNeurons_A][9])
-         # print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('self.v[self.senseNeurons_B]',': '\
-         #                                                                                                            ,self.v[self.senseNeurons_B][0],self.v[self.senseNeurons_B][1],self.v[self.senseNeurons_B][2]\
-         #                                                                                                            ,self.v[self.senseNeurons_B][3],self.v[self.senseNeurons_B][4],self.v[self.senseNeurons_B][5]\
-         #                                                                                                            ,self.v[self.senseNeurons_B][6],self.v[self.senseNeurons_B][7],self.v[self.senseNeurons_B][8]\
-         #                                                                                                            ,self.v[self.senseNeurons_B][9])
-         # print '{:36s}{:2s}{:12.4f}{:12.4f}'.format('self.I[self.motorNeurons]',': ', self.I[self.motorNeurons[0]],self.I[self.motorNeurons[1]])
-         # print '{:36s}{:2s}{:12.4f}{:12.4f}'.format('self.v[self.motorNeurons]',': ', self.v[self.motorNeurons[0]],self.v[self.motorNeurons[1]]), '\n'
+
 
          # print self.motor_neuron1_count, self.motor_neuron2_count
          # print self.count
