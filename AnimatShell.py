@@ -136,6 +136,9 @@ class WheelAnimat(Animat):
         if(dir <= 0): dir += math.pi*2    #bound direction to [0, 2*pi]
         rotMat = np.array([[np.cos(dir), -np.sin(dir)], [np.sin(dir), np.cos(dir)]])  #construct the rotation matrix
 
+        np.set_printoptions(edgeitems=100)
+        print self.net.senseNeuronLocations_A
+        print self.net.senseNeuronLocations_B
         worldPos_A = np.dot(self.net.senseNeuronLocations_A, rotMat) + self.pos           #get the world position of the sense neurons based on the position and rotation of the Animat
         worldPos_B = np.dot(self.net.senseNeuronLocations_B, rotMat) + self.pos           #get the world position of the sense neurons based on the position and rotation of the Animat
 
