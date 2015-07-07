@@ -43,6 +43,8 @@ class Network:
          self.u= self.b*self.v
          self.S = np.array([[]], dtype = np.float32) # row-major order; S(2,3) is weight from #2 to #3
 
+         self.firing_color = "#000000"
+         self.color = "#ffffff"
          self.sense_B_fired = [0 for i in range(10)]
          self.sense_A_fired = [0 for i in range(10)]
          self.M1_fp = [0,0,0,0,0,0,0,0]
@@ -79,14 +81,20 @@ class Network:
 
          # arrays used for the sense neurons
          self.senseNeuronLocations_A = np.array([],ndmin=2) # holds locations on animat
-         self.senseNeurons_A = np.array([], dtype=np.int_) # holds neuron indices
          self.numSensory_A = 0
          self.senseNeuronLocations_B = np.array([],ndmin=2) # holds locations on animat
          self.numSensory_B = 0
-         self.senseNeurons_B = np.array([], dtype=np.int_) # holds neuron indices
-         self.motorNeurons = np.array([], dtype=np.int_)
+
+         self.inhibitoryNeurons = []
+         self.excitatoryNeurons = []
+         self.senseNeurons_A = [] # holds neuron indices
+         self.senseNeurons_B = [] # holds neuron indices
+         self.motorNeurons = []
+         self.hungerNeurons = []
+
          self.attribute_list = []
          self.indices_location = []
+         self.fired = []
 
          #These will be dictionaries of Lists eventually for different types of sensory neurons!
          self.sensitivity_A = np.array([], ndmin = 2) # sensitivity to smell A: hard-coded to
@@ -95,7 +103,7 @@ class Network:
          self.neuron_circle_loc = {'inhibitory':[], 'excitatory':[], 'motor':[], 'sensory_A':[], 'sensory_B':[], 'hunger':[]} # contains indices and xy position [indice, x, y]
 
 
-     def add_neuron(self, typea, neuron_index, position, circle, sensitivity = 2):         #adds specific types of neurons
+     def add_neuron(self, typea, neuron_index, position, circle, sensitivity = 100):         #adds specific types of neurons
          self.a = np.insert(self.a, neuron_index, self.default_a)        # sets a
          self.b = np.insert(self.b, neuron_index, self.default_b)        # sets b
          self.c = np.insert(self.c, neuron_index, self.default_c)        # sets c
@@ -104,26 +112,29 @@ class Network:
          self.u = np.insert(self.u, neuron_index, self.default_u)        # sets u = b*v
          if typea == 'inhibitory':                    #  can be used later to change specific variables for types of neurons
               circle['inhibitory'].append([neuron_index, position])
+              self.inhibitoryNeurons.append(neuron_index)
               self.indices_location.append(position)
          if typea == 'excitatory':
               circle['excitatory'].append([neuron_index, position])
+              self.excitatoryNeurons.append(neuron_index)
               self.indices_location.append(position)
          if typea == 'sensory_A':
               circle['sensory_A'].append([neuron_index, position])
               self.sensitivity_A = np.append(self.sensitivity_A, sensitivity)
-              self.senseNeurons_A = np.append(self.senseNeurons_A, neuron_index)
+              self.senseNeurons_A.append(neuron_index)
               self.indices_location.append(position)
          if typea == 'sensory_B':
               circle['sensory_B'].append([neuron_index, position])
               self.sensitivity_B = np.append(self.sensitivity_B, sensitivity)
-              self.senseNeurons_B = np.append(self.senseNeurons_B, neuron_index)
+              self.senseNeurons_B.append(neuron_index)
               self.indices_location.append(position)
          if typea == 'motor':
               circle['motor'].append([neuron_index, position])
-              self.motorNeurons = np.append(self.motorNeurons, neuron_index)
+              self.motorNeurons.append(neuron_index)
               self.indices_location.append(position)
          if typea == 'hunger':
               circle['hunger'].append([neuron_index, position])
+              self.hungerNeurons.append(neuron_index)
               self.indices_location.append(position)
 
 
@@ -243,6 +254,21 @@ class Network:
 
      def get_neurons_firing(self): # used in GUI driver to change colors
          return (self.v >= self.FIRED_VALUE).nonzero()
+
+     def get_color(self, index): # used in GUI driver for colors
+         if index in self.inhibitoryNeurons:
+             self.color = "#b1b1ff"
+         elif index in self.excitatoryNeurons:
+             self.color = "#ff0000"   # Red
+         elif index in self.senseNeurons_A:
+             self.color = "#009900"     #Green
+         elif index in self.senseNeurons_B:
+             self.color = "#0000FF"   #Blue
+         elif index in self.motorNeurons:
+             self.color = "#808080"  #Grey
+         elif index in self.hungerNeurons:
+             self.color = "#660066"    #Purple
+         return self.color
 
      def getNeurons(self):  #populates neuron objects with vectorized data so that upper levels (e.g. GUIDriver) can use them in an OO manner
          for i in range(0, len(self.indices_list)):
