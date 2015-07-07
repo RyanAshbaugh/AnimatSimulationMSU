@@ -25,6 +25,9 @@ class Network:
     #kwargs used for evo driver
      def __init__(self,R_center,L_center,R_radii,L_radii): # mixture of neuron parameters and initializing network numbers
          #some constants/tracking numbers
+         self.motor_decay = .9
+         self.M1_input_sum = 0
+         self.M2_input_sum = 0
          self.FIRED_VALUE = 30 # mV
          self.kSynapseDecay = 0.7
          self.default_a = np.float32(.02)     # sets default values for the Izhikivech variables
@@ -187,6 +190,8 @@ class Network:
                     for i in xrange(5):
                          rVal = self.R_radii[i] - np.sqrt( np.square(x - self.R_center[i][0]) + np.square(y - self.R_center[i][1]))
                          lVal = self.L_radii[i] - np.sqrt( np.square(x - self.L_center[i][0]) + np.square(y - self.L_center[i][1]))
+                         rVal = random.random()
+                         lVal = random.random()
                          if rVal < 0.0: rVal = 0.0
                          if lVal < 0.0: lVal = 0.0
                          rl_array[index[0]][i] = rVal
@@ -218,7 +223,7 @@ class Network:
                     self.S[n1][n2] = connectionWeight
 
           np.set_printoptions(edgeitems= 100)
-          # print self.S
+          print self.S
           # initialize I
           self.I = 2*np.ones( (len(self.indices_list)), dtype = np.float32)
 
@@ -313,8 +318,6 @@ class Network:
          #     for j in self.S[i]:
          #         newI[j] += (self.S[i][j]*self.voltIncr)
          newI = np.sum(self.S[self.fired],axis=0)
-         # np.set_printoptions(edgeitems=100)
-         # print self.S
 
          # tempNewIlista = (newI[self.senseNeurons_A] >= 20).nonzero()[0]
          # tempNewIlistb = (newI[self.senseNeurons_B] >= 20).nonzero()[0]
@@ -323,6 +326,18 @@ class Network:
             # print 'self.S[self.senseNeurons_B]: ', self.S[self.senseNeurons_B]
 
          self.I = self.kSynapseDecay*self.I + newI
+         self.M1_input_sum = self.M1_input_sum*self.motor_decay
+         for i in self.S[self.fired][:,self.motorNeurons[0]]:
+             # print 'self.S[self.fired][:,self.motorNeurons[0]]',self.S[self.fired][:,self.motorNeurons[0]]
+             if i > 0:
+                 self.M1_input_sum += .01*i
+                 print 'M1', self.M1_input_sum
+         self.M2_input_sum = self.M2_input_sum*self.motor_decay
+         for i in self.S[self.fired][:,self.motorNeurons[1]]:
+             # print 'self.S[self.fired][:,self.motorNeurons[1]]',self.S[self.fired][:,self.motorNeurons[1]]
+             if i > 0:
+                 self.M2_input_sum += .01*i
+                 print 'M2', self.M2_input_sum
          self.cap_I = (self.I >= 50).nonzero()[0]
          self.I[self.cap_I] = 50
 
