@@ -329,15 +329,13 @@ class Network:
          self.M1_input_sum = self.M1_input_sum*self.motor_decay
          for i in self.S[self.fired][:,self.motorNeurons[0]]:
              # print 'self.S[self.fired][:,self.motorNeurons[0]]',self.S[self.fired][:,self.motorNeurons[0]]
-             if i > 0:
-                 self.M1_input_sum += .01*i
-                 print 'M1', self.M1_input_sum
+             self.M1_input_sum += .01*i
+             print 'M1', self.M1_input_sum
          self.M2_input_sum = self.M2_input_sum*self.motor_decay
          for i in self.S[self.fired][:,self.motorNeurons[1]]:
              # print 'self.S[self.fired][:,self.motorNeurons[1]]',self.S[self.fired][:,self.motorNeurons[1]]
-             if i > 0:
-                 self.M2_input_sum += .01*i
-                 print 'M2', self.M2_input_sum
+             self.M2_input_sum += .01*i
+             print 'M2', self.M2_input_sum
          self.cap_I = (self.I >= 50).nonzero()[0]
          self.I[self.cap_I] = 50
 
@@ -359,37 +357,37 @@ class Network:
      # NEEDS attention to operate smoothly
      def getMotorData(self):
 
-         newM1 = 0 if(self.v[self.motorNeurons[0]] <= 30) else 1    #(self.v[self.motorNeurons[0]]) # returns 0 if motorNeuron doesn't fire and 1 if it does
-         if newM1 == 1:
-            self.motor_neuron1_count += 1
-         newM2 = 0 if(self.v[self.motorNeurons[1]] <= 30) else 1    #(self.v[self.motorNeurons[1]]) # returns 0 if motorNeuron doesn't fire and 1 if it does
-         if newM2 == 1:
-            self.motor_neuron2_count += 1
-         # self.count += 1
-
-
-         self.M1_fp= self.M1_fp[:7] # firing pattern of motor neuron 1, M1_fp[0] is the most recent 0/1 and M1_fp[3] gets left, only last three 0/1's are stored at this point
-         self.M1_fp.insert(0,newM1) # wether or not the motor neuron fired this run through network is inserted into M1_fp[0] here, so M1_fp[0] is always the latest 0/1
-         self.M2_fp= self.M2_fp[:7] # firing pattern of motor neuron 2, M2_fp[0] is the most recent 0/1 and M2_fp[3] gets left, only last three 0/1's are stored at this point
-         self.M2_fp.insert(0,newM2) # wether or not the motor neuron fired this run through network is inserted into M2_fp[0] here, so M2_fp[0] is always the latest 0/1
-         for i in range(8): # for all four indices in M_fp lists
-             self.M1adjusted[i] = self.M1_fp[i]*(.8**i) # gets the adjusted weight of the neuron having fired in the past, 20% reduction for each run in the past
-             self.M2adjusted[i] = self.M2_fp[i]*(.8**i) # gets the adjusted weight of the neuron having fired in the past, 20% reduction for each run in the past
-         # if self.M1adjusted != self.M2adjusted:
-         #    print 'sums: ',sum(self.M1adjusted),sum(self.M2adjusted)
-
-
-         # print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('self.I[self.senseNeurons_A]',': '\
-         #                                                                                                            ,self.I[self.senseNeurons_A][0],self.I[self.senseNeurons_A][1],self.I[self.senseNeurons_A][2]\
-         #                                                                                                            ,self.I[self.senseNeurons_A][3],self.I[self.senseNeurons_A][4],self.I[self.senseNeurons_A][5]\
-         #                                                                                                            ,self.I[self.senseNeurons_A][6],self.I[self.senseNeurons_A][7],self.I[self.senseNeurons_A][8]\
-         #                                                                                                            ,self.I[self.senseNeurons_A][9])
-
-
-         # print self.motor_neuron1_count, self.motor_neuron2_count
-         # print self.count
-         return sum(self.M1adjusted),sum(self.M2adjusted)   # returns the adjusted sum of the M_fp's (a+(b*.8)+(c*.64)+(d*.512))
-
+         # newM1 = 0 if(self.v[self.motorNeurons[0]] <= 30) else 1    #(self.v[self.motorNeurons[0]]) # returns 0 if motorNeuron doesn't fire and 1 if it does
+         # if newM1 == 1:
+         #    self.motor_neuron1_count += 1
+         # newM2 = 0 if(self.v[self.motorNeurons[1]] <= 30) else 1    #(self.v[self.motorNeurons[1]]) # returns 0 if motorNeuron doesn't fire and 1 if it does
+         # if newM2 == 1:
+         #    self.motor_neuron2_count += 1
+         # # self.count += 1
+         #
+         #
+         # self.M1_fp= self.M1_fp[:7] # firing pattern of motor neuron 1, M1_fp[0] is the most recent 0/1 and M1_fp[3] gets left, only last three 0/1's are stored at this point
+         # self.M1_fp.insert(0,newM1) # wether or not the motor neuron fired this run through network is inserted into M1_fp[0] here, so M1_fp[0] is always the latest 0/1
+         # self.M2_fp= self.M2_fp[:7] # firing pattern of motor neuron 2, M2_fp[0] is the most recent 0/1 and M2_fp[3] gets left, only last three 0/1's are stored at this point
+         # self.M2_fp.insert(0,newM2) # wether or not the motor neuron fired this run through network is inserted into M2_fp[0] here, so M2_fp[0] is always the latest 0/1
+         # for i in range(8): # for all four indices in M_fp lists
+         #     self.M1adjusted[i] = self.M1_fp[i]*(.8**i) # gets the adjusted weight of the neuron having fired in the past, 20% reduction for each run in the past
+         #     self.M2adjusted[i] = self.M2_fp[i]*(.8**i) # gets the adjusted weight of the neuron having fired in the past, 20% reduction for each run in the past
+         # # if self.M1adjusted != self.M2adjusted:
+         # #    print 'sums: ',sum(self.M1adjusted),sum(self.M2adjusted)
+         #
+         #
+         # # print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('self.I[self.senseNeurons_A]',': '\
+         # #                                                                                                            ,self.I[self.senseNeurons_A][0],self.I[self.senseNeurons_A][1],self.I[self.senseNeurons_A][2]\
+         # #                                                                                                            ,self.I[self.senseNeurons_A][3],self.I[self.senseNeurons_A][4],self.I[self.senseNeurons_A][5]\
+         # #                                                                                                            ,self.I[self.senseNeurons_A][6],self.I[self.senseNeurons_A][7],self.I[self.senseNeurons_A][8]\
+         # #                                                                                                            ,self.I[self.senseNeurons_A][9])
+         #
+         #
+         # # print self.motor_neuron1_count, self.motor_neuron2_count
+         # # print self.count
+         # return sum(self.M1adjusted),sum(self.M2adjusted)   # returns the adjusted sum of the M_fp's (a+(b*.8)+(c*.64)+(d*.512))
+         return self.M1_input_sum, self.M2_input_sum
 
          # if newM1 != newM2: print 'newM1, newM2', newM1, newM2
          # if newM1 or newM2 != 0: print 'newM1,newM2', newM1, newM2, '\n'
