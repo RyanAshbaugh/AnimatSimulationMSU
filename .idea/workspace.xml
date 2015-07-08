@@ -2,10 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="16a02148-df51-451c-a9b9-27983040b5c1" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/AnimatSimulation.iml" afterPath="$PROJECT_DIR$/.idea/AnimatSimulation.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DevelopmentWindow_stripped.py" afterPath="$PROJECT_DIR$/DevelopmentWindow_stripped.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/NetworkModule.py" afterPath="$PROJECT_DIR$/NetworkModule.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="AnimatSimulation.iws" />
@@ -63,7 +59,7 @@
       <file leaf-file-name="DevelopmentWindow_stripped.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/DevelopmentWindow_stripped.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5800525">
+            <state vertical-scroll-proportion="1.7847769">
               <caret line="53" column="42" selection-start-line="53" selection-start-column="42" selection-end-line="53" selection-end-column="42" />
               <folding />
             </state>
@@ -73,7 +69,7 @@
       <file leaf-file-name="SimulationEngine.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/SimulationEngine.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-2.9615386">
+            <state vertical-scroll-proportion="0.0">
               <caret line="34" column="29" selection-start-line="34" selection-start-column="29" selection-end-line="34" selection-end-column="29" />
               <folding>
                 <element signature="e#22#38#0" expanded="true" />
@@ -368,7 +364,13 @@
       <option name="project" value="LOCAL" />
       <updated>1435590188000</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Created DevelopmentWindow_stripped.py that runs a simulation without the gui or evo driver">
+      <created>1436370219444</created>
+      <option name="number" value="00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1436370219444</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -382,7 +384,7 @@
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3213166" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3213166" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
@@ -408,8 +410,10 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="CHECK_NEW_TODO" value="false" />
     <MESSAGE value="changed the energy reduction" />
-    <option name="LAST_COMMIT_MESSAGE" value="changed the energy reduction" />
+    <MESSAGE value="Created DevelopmentWindow_stripped.py that runs a simulation without the gui or evo driver" />
+    <option name="LAST_COMMIT_MESSAGE" value="Created DevelopmentWindow_stripped.py that runs a simulation without the gui or evo driver" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -464,16 +468,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/SimulationEngine.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.9615386">
-          <caret line="34" column="29" selection-start-line="34" selection-start-column="29" selection-end-line="34" selection-end-column="29" />
-          <folding>
-            <element signature="e#22#38#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/World.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -482,9 +476,19 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/SimulationEngine.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="34" column="29" selection-start-line="34" selection-start-column="29" selection-end-line="34" selection-end-column="29" />
+          <folding>
+            <element signature="e#22#38#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/DevelopmentWindow_stripped.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5800525">
+        <state vertical-scroll-proportion="1.7847769">
           <caret line="53" column="42" selection-start-line="53" selection-start-column="42" selection-end-line="53" selection-end-column="42" />
           <folding />
         </state>
