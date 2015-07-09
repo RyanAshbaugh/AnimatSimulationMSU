@@ -18,13 +18,15 @@ import math
 import numpy as np
 import random
 import SimParam
+import inspect
 
 class Network:
 
     #kwargs used for evo driver
      def __init__(self,R_center,L_center,R_radii,L_radii): # mixture of neuron parameters and initializing network numbers
          #some constants/tracking numbers
-         print 'this is the new network branch'
+         print 'this is the Test_branch'
+         print inspect.stack()
          self.FIRED_VALUE = 30 # mV
          self.DT = 1 # ms
          self.numExcitatory = 0
@@ -306,21 +308,21 @@ class Network:
                  if connectionWeight <= (3.0/2.0): connectionWeight = 0
                  self.S[n1,n2] = connectionWeight
 
-         for item in neuronIndices:
-             print item, 'R', self._neurons[item].r, 'L', self._neurons[item].l
-
-         # print 'self.x0', self.x0, 'self.y0', self.x0, 'self.sigma', self.sigma
-         print 'self.excitatoryNeurons', self.excitatoryNeurons
-         print 'self.senseNeurons_A', self.senseNeurons_A
-         print 'self.senseNeurons_B', self.senseNeurons_B
-         print 'self.motorNeurons', self.motorNeurons
-         print 'self.hungerNeuron', self.hungerNeurons
-         # print 'a', self.S[self.senseNeurons_A]
-         # print 'b', self.S[self.senseNeurons_B]
+         # for item in neuronIndices:
+         #     print item, 'R', self._neurons[item].r, 'L', self._neurons[item].l
+         #
+         # # print 'self.x0', self.x0, 'self.y0', self.x0, 'self.sigma', self.sigma
+         # print 'self.excitatoryNeurons', self.excitatoryNeurons
+         # print 'self.senseNeurons_A', self.senseNeurons_A
+         # print 'self.senseNeurons_B', self.senseNeurons_B
+         # print 'self.motorNeurons', self.motorNeurons
+         # print 'self.hungerNeuron', self.hungerNeurons
+         # # print 'a', self.S[self.senseNeurons_A]
+         # # print 'b', self.S[self.senseNeurons_B]
          # initialize I
          self.I = 2*np.ones( (self.totalNum), dtype = np.float32 ) # should be in initialization
-         np.set_printoptions(edgeitems=100)
-         print self.S
+         # np.set_printoptions(edgeitems=100)
+         # print self.S
          # for index in neuronIndices:
          #    print index, '\n', self._neurons[index], '\n', self.S[:,index]
 
@@ -450,7 +452,7 @@ class Network:
          newM2 = 0 if(self.v[self.motorNeurons[1]] <= 30) else 1    #(self.v[self.motorNeurons[1]]) # returns 0 if motorNeuron doesn't fire and 1 if it does
          if newM2 == 1:
             self.motor_neuron2_count += 1
-         # self.count += 1
+         self.count += 1
 
 
          self.M1_fp= self.M1_fp[:7] # firing pattern of motor neuron 1, M1_fp[0] is the most recent 0/1 and M1_fp[3] gets left, only last three 0/1's are stored at this point
@@ -500,5 +502,16 @@ class Network:
          # print 'self.I sensory_B', self.I[self.senseNeurons_B]
          # return newM1,newM2
 
+     def getcount(self):
+         return self.count
+
      def getTotalNeuronNum(self):
          return self.totalNum
+
+# class getcount:
+#
+#     def __init__(self):
+#         self.count = self.count
+#
+#     def getcount(self):
+#         return self.count

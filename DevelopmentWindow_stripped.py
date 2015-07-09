@@ -14,6 +14,9 @@ import tkFileDialog
 import json
 import SimParam
 import random
+import clusterDriver
+import NetworkModule
+import AnimatShell
 
 
 class DevelopmentWindow():
@@ -52,6 +55,15 @@ class DevelopmentWindow():
         self.layoutHist = 300                   #y value holder for new aniimat config button placement
         self.layoutList = []                    # holds config/delete animat buttons and labels for any animats other than default
         self.simEngine.startNewSim(self.sP)
+        count = 0
+        loop_value = True
+        while loop_value:
+            if AnimatShell.Animat.count > 1000:
+                a = clusterDriver.Simulation()
+                a.startSimulation(["Energy","FoodsEaten","FindsFood","NetworkDensity","FiringRate","TotalMove"])
+                print a
+                self.stop()
+                loop_value = False
 
 #         #intialize TK
 #         self.root = tk.Tk()
@@ -197,8 +209,8 @@ class DevelopmentWindow():
 #     def pause(self):
 #         pass
 #
-#     def stop(self):
-#         self.simEngine.stopSimulation()
+    def stop(self):
+        self.simEngine.stopSimulation()
 #
 #     def restart(self):
 #         self.developmentHistory = {}

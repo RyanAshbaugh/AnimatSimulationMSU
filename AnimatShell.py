@@ -170,15 +170,15 @@ class WheelAnimat(Animat):
         #     print 't', self.count
         #     print 'total_smell_A', '\n', total_smell_A
 
-        if self.count > 1000:
-            print 'scipy.spatial.distance.cdist(worldPos_A, smell_loc_A )', '\n', scipy.spatial.distance.cdist(worldPos_A, smell_loc_A )
-            print 'scipy.spatial.distance.cdist(worldPos_B, smell_loc_B )', '\n', scipy.spatial.distance.cdist(worldPos_B, smell_loc_B )
-            print 'self.gaussian(scipy.spatial.distance.cdist(worldPos_A, smell_loc_A )', '\n', self.gaussian(scipy.spatial.distance.cdist(worldPos_A, smell_loc_A ), 0, 3)
-            print 'self.gaussian(scipy.spatial.distance.cdist(worldPos_B, smell_loc_B )', '\n', self.gaussian(scipy.spatial.distance.cdist(worldPos_B, smell_loc_B ), 0, 3)
-            print 'np.sum(self.gaussian(scipy.spatial.distance.cdist(worldPos_A, smell_loc_A ), 0, 3),axis=1)', '\n', np.sum(self.gaussian(scipy.spatial.distance.cdist(worldPos_A, smell_loc_A ), 0, 3),axis=1)
-            print 'np.sum(self.gaussian(scipy.spatial.distance.cdist(worldPos_B, smell_loc_B ), 0, 3),axis=1)', '\n', np.sum(self.gaussian(scipy.spatial.distance.cdist(worldPos_B, smell_loc_B ), 0, 3),axis=1)
-            print 'total_smell_A', '\n', total_smell_A
-            print 'total_smell_B', '\n', total_smell_B, '\n'
+        # if self.count > 1000:
+        #     print 'scipy.spatial.distance.cdist(worldPos_A, smell_loc_A )', '\n', scipy.spatial.distance.cdist(worldPos_A, smell_loc_A )
+        #     print 'scipy.spatial.distance.cdist(worldPos_B, smell_loc_B )', '\n', scipy.spatial.distance.cdist(worldPos_B, smell_loc_B )
+        #     print 'self.gaussian(scipy.spatial.distance.cdist(worldPos_A, smell_loc_A )', '\n', self.gaussian(scipy.spatial.distance.cdist(worldPos_A, smell_loc_A ), 0, 3)
+        #     print 'self.gaussian(scipy.spatial.distance.cdist(worldPos_B, smell_loc_B )', '\n', self.gaussian(scipy.spatial.distance.cdist(worldPos_B, smell_loc_B ), 0, 3)
+        #     print 'np.sum(self.gaussian(scipy.spatial.distance.cdist(worldPos_A, smell_loc_A ), 0, 3),axis=1)', '\n', np.sum(self.gaussian(scipy.spatial.distance.cdist(worldPos_A, smell_loc_A ), 0, 3),axis=1)
+        #     print 'np.sum(self.gaussian(scipy.spatial.distance.cdist(worldPos_B, smell_loc_B ), 0, 3),axis=1)', '\n', np.sum(self.gaussian(scipy.spatial.distance.cdist(worldPos_B, smell_loc_B ), 0, 3),axis=1)
+        #     print 'total_smell_A', '\n', total_smell_A
+        #     print 'total_smell_B', '\n', total_smell_B, '\n'
 
         # print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('# of times sense_A fired',': '\
         #                                                                                                  ,self.net.Afired()[0],self.net.Afired()[1],self.net.Afired()[2]\
