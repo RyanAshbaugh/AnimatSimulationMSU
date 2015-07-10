@@ -222,8 +222,8 @@ class Network:
                     rl_array[n2][5:] = ligand[5:]
                     self.S[n1][n2] = connectionWeight
 
-          np.set_printoptions(edgeitems= 100)
-          print self.S
+          # np.set_printoptions(edgeitems= 100)
+          # print self.S
           # initialize I
           self.I = 2*np.ones( (len(self.indices_list)), dtype = np.float32)
 
@@ -326,16 +326,12 @@ class Network:
             # print 'self.S[self.senseNeurons_B]: ', self.S[self.senseNeurons_B]
 
          self.I = self.kSynapseDecay*self.I + newI
-         self.M1_input_sum = self.M1_input_sum*self.motor_decay
-         for i in self.S[self.fired][:,self.motorNeurons[0]]:
-             # print 'self.S[self.fired][:,self.motorNeurons[0]]',self.S[self.fired][:,self.motorNeurons[0]]
-             self.M1_input_sum += .01*i
-             print 'M1', self.M1_input_sum
-         self.M2_input_sum = self.M2_input_sum*self.motor_decay
-         for i in self.S[self.fired][:,self.motorNeurons[1]]:
-             # print 'self.S[self.fired][:,self.motorNeurons[1]]',self.S[self.fired][:,self.motorNeurons[1]]
-             self.M2_input_sum += .01*i
-             print 'M2', self.M2_input_sum
+         self.M1_input_sum = self.M1_input_sum*self.motor_decay     # decays previous motor output by 90%
+         self.M1_input_sum += (sum(self.S[self.fired][:,self.motorNeurons[0]]))*.005    # sums input from neurons that fired that are connected to the motor
+         print 'M1', self.M1_input_sum
+         self.M2_input_sum = self.M2_input_sum*self.motor_decay     # decays previous motor output by 90%
+         self.M2_input_sum += (sum(self.S[self.fired][:,self.motorNeurons[1]]))*.005    # sums input from neurons that fired that are connected to the motor
+         print 'M2', self.M2_input_sum
          self.cap_I = (self.I >= 50).nonzero()[0]
          self.I[self.cap_I] = 50
 
