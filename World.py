@@ -83,6 +83,7 @@ class World:
 class DynamicWorldState:
     def __init__(self, state):
         self.state = state
+        print self.state
 
     def getFood(self):
         return self.state[0]
@@ -98,7 +99,7 @@ class DynamicWorldState:
             return self.getAnimatState()[2]
 
     def getPos(self):
-        return self.getAnimatState()[4]
+        return self.getAnimatState()[3]
 
     def getA(self):
         return self.getAnimatState()[7][0]

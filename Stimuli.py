@@ -22,7 +22,6 @@ class Stimulus():
     def getPos(self):
         return [self.pos[0],self.pos[1]]
 
-
 ##################### Food CLass ######################################################
                  ## Basic food object ##
 
