@@ -194,6 +194,8 @@ class Network:
                          lVal = random.random()
                          if rVal < 0.0: rVal = 0.0
                          if lVal < 0.0: lVal = 0.0
+                         print 'rVal', rVal
+                         print 'lVal', lVal
                          rl_array[index[0]][i] = rVal
                          rl_array[index[0]][i+5] = lVal
 
