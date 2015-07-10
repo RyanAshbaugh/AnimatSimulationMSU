@@ -55,15 +55,15 @@ class DevelopmentWindow():
         self.layoutHist = 300                   #y value holder for new aniimat config button placement
         self.layoutList = []                    # holds config/delete animat buttons and labels for any animats other than default
         self.simEngine.startNewSim(self.sP)
-        count = 0
-        loop_value = True
-        while loop_value:
-            if AnimatShell.Animat.count > 1000:
-                a = clusterDriver.Simulation()
-                a.startSimulation(["Energy","FoodsEaten","FindsFood","NetworkDensity","FiringRate","TotalMove"])
-                print a
-                self.stop()
-                loop_value = False
+        a = clusterDriver.Simulation(1,1,self.sP,1000)
+        a.startSimulation(["Energy","FoodsEaten","FindsFood","NetworkDensity","FiringRate","TotalMove"])
+        # loop_value = True
+        # while loop_value:
+        # if devWin.simEngine.world. > 1000:
+        #     a = clusterDriver.Simulation(1,1,self.sP,1000)
+        #     a.startSimulation(["Energy","FoodsEaten","FindsFood","NetworkDensity","FiringRate","TotalMove"])
+        #     print a
+        #     self.stop()
 
 #         #intialize TK
 #         self.root = tk.Tk()

@@ -26,7 +26,7 @@ class Network:
      def __init__(self,R_center,L_center,R_radii,L_radii): # mixture of neuron parameters and initializing network numbers
          #some constants/tracking numbers
          print 'this is the Test_branch'
-         print inspect.stack()
+         # print inspect.stack()
          self.FIRED_VALUE = 30 # mV
          self.DT = 1 # ms
          self.numExcitatory = 0
