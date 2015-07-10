@@ -285,8 +285,9 @@ class GUIDriver:
                 neuronGraph = self.neuron_graphs[animat.id]
                 neuronGraph.plotCircle((2, 2), (0, 0), self.colorWhite)
                 neurons = animat.net.getNeurons()
-                for neuron in neurons:
-                    neuronGraph.plotCircle((.05, .05), (neuron.X, neuron.Y), neuron.firing_color if neuron.isFiring() else neuron.color)
+                for neuron in range(len(animat.net.indices_list)):
+                    neuronGraph.plotCircle((.05, .05), (animat.net.indices_location[neuron][0], animat.net.indices_location[neuron][1]), \
+                                           animat.net.firing_color if neuron in(animat.net.fired) else animat.net.get_color(neuron))
                 neuronGraph.draw(self.canvas)
 
 

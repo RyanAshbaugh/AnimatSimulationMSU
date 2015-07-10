@@ -96,14 +96,30 @@ class EvoDriver():
             sP.setWorld(5,1,15,20,[(random.random()*20 - 20.0/2., random.random()*20 - 20.0/2.) for i in xrange(15)])
             sP.setAnimParams(1,self.IDcntr,self.origin)
             if x0 == -1:
-                #Unif[a,b), b > a: (b-a)*random + a
-                sP.setX0(1,[[np.random.random_sample()*3.01 - 1.5 for x in xrange(self.K)] for x in xrange(self.L)]) #hardcoded for only 1 animat per simulation
-                sP.setY0(1,[[np.random.random_sample()*3.01 - 1.5 for x in xrange(self.K)] for x in xrange(self.L)]) #hardcoded for only 1 animat per simulation
-                sP.setSigma(1,[[np.random.exponential() for x in xrange(self.K)] for x in xrange(self.L)])
+                # replacement for random generation of variables used to determine synapse connections
+                sP.setR_center(i, [[-.7 + random.randrange(-1, 1, .01),.7 + random.randrange(-1, 1, .01)],[.7 + random.randrange(-1, 1, .01),.7 + random.randrange(-1, 1, .01)],\
+                        [.7 + random.randrange(-1, 1, .01),-.7 + random.randrange(-1, 1, .01)],[-.7 + random.randrange(-1, 1, .01),-.7 + random.randrange(-1, 1, .01)],\
+                                   [0 + random.randrange(-1, 1, .01),0 + random.randrange(-1, 1, .01)]])
+                sP.setL_center(i, [[.7 + random.randrange(-1, 1, .01),-.7 + random.randrange(-1, 1, .01)],[-.7 + random.randrange(-1, 1, .01),-.7 + random.randrange(-1, 1, .01)],\
+                        [1.2 + random.randrange(-1, 1, .01),0 + random.randrange(-1, 1, .01)],[-1.2+ random.randrange(-1, 1, .01),0 + random.randrange(-1, 1, .01)],\
+                                   [0 + random.randrange(-1, 1, .01),-1.0 + random.randrange(-1, 1, .01)]])
+                sP.setR_radii(i, [random.random() for x in xrange(5)])
+                sP.setL_radii(i, [random.random() for x in xrange(5)])
+
+
+                # #Unif[a,b), b > a: (b-a)*random + a
+                # sP.setX0(1,[[np.random.random_sample()*3.01 - 1.5 for x in xrange(self.K)] for x in xrange(self.L)]) #hardcoded for only 1 animat per simulation
+                # sP.setY0(1,[[np.random.random_sample()*3.01 - 1.5 for x in xrange(self.K)] for x in xrange(self.L)]) #hardcoded for only 1 animat per simulation
+                # sP.setSigma(1,[[np.random.exponential() for x in xrange(self.K)] for x in xrange(self.L)])
             else:
-                sP.setX0(1,x0) #hardcoded for only 1 animat per simulation
-                sP.setY0(1,y0) #hardcoded for only 1 animat per simulation
-                sP.setSigma(1,sigma)
+                sP.setR_center(i, R_center)
+                sP.setL_center(i, L_center)
+                sP.setR_radii(i, R_radii)
+                sP.setL_radii(i, L_radii)
+
+                # sP.setX0(1,x0) #hardcoded for only 1 animat per simulation
+                # sP.setY0(1,y0) #hardcoded for only 1 animat per simulation
+                # sP.setSigma(1,sigma)
             list.append(sP)
             self.IDcntr += 1
 

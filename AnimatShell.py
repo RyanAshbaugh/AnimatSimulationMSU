@@ -89,12 +89,13 @@ class WheelAnimat(Animat):
     def move(self, trac, t):
         # new proposed method to move the animat
         M1_sum,M2_sum = self.net.getMotorData() # sets M1_sum and M2_sum equal to the adjusted sum from getMotorData()
+        motion_sum = M1_sum + M2_sum
         new_theta = math.atan(-(M1_sum-M2_sum)/2.4)
         self.direc = self.direc + (new_theta/4.0)
         if not self.Eating:
             if M1_sum != 0 or M2_sum != 0:
-                self.pos = self.pos + [(((M1_sum+M2_sum)/2.0)+1)*math.cos(self.direc)*.005, (((M1_sum+M2_sum)/2.0)+1)*math.sin(self.direc)*.005]
-                self.Energy = self.Energy - (self.cMotionEnergy * M1_sum+M2_sum) - self.kBasalEnergy
+                self.pos = self.pos + [motion_sum*math.cos(self.direc)*.01, motion_sum*math.sin(self.direc)*.01]
+                self.Energy = self.Energy - (self.cMotionEnergy * motion_sum) - self.kBasalEnergy
         else:
             self.pos = self.pos
             self.Energy = self.Energy - self.kBasalEnergy
