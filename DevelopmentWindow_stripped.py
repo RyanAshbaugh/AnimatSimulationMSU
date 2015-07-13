@@ -55,9 +55,13 @@ class DevelopmentWindow():
         self.layoutHist = 300                   #y value holder for new aniimat config button placement
         self.layoutList = []                    # holds config/delete animat buttons and labels for any animats other than default
         # self.simEngine.startNewSim(self.sP)
-        a = clusterDriver.Simulation(1,1,self.sP,10)
-        a_temp = a.startSimulation(["Energy","FoodsEaten","FindsFood","NetworkDensity","FiringRate","TotalMove"])
-        print a_temp
+        simulation_object = clusterDriver.Simulation(1,1,self.sP,100)
+        object_metrics = simulation_object.startSimulation(["Energy","FoodsEaten","FindsFood","NetworkDensity","FiringRate","TotalMove"])
+        metrics_log = open('metrics_log.txt', 'a')
+        metrics_log.write("%s\n" % object_metrics)
+        metrics_log.close()
+        print object_metrics
+
         # loop_value = True
         # while loop_value:
         # if devWin.simEngine.world. > 1000:

@@ -108,7 +108,6 @@ class Simulation():
     def filterResults(self,metrics):
         temp = {}        #dictionary of results
         if "Energy" in metrics: temp["Energy"] = self.getNrg()
-        print temp["Energy"]
         if "FindsFood" in metrics: temp["FindsFood"] = self.findsFood()
         if "TotalMove" in metrics: temp["TotalMove"] = self.totalMove()
         if "FoodsEaten" in metrics: temp["FoodsEaten"] = self.foodsEaten()
@@ -130,7 +129,6 @@ class Simulation():
     def findsFood(self):
         score = 0.0
         initNrg = self.simHistory[0][1].getEnergy()       #get initial energy from first state
-        print self.simHistory[0][1]
         prevDist = self.minFoodDist(self.simHistory[0][1])#find initial distance
         for t,s in self.simHistory[1:]:
             if s.getEnergy() < (.5*initNrg):
@@ -180,9 +178,12 @@ class Simulation():
             numFirings = 0
             for state in xrange(sps):
                 state = self.simHistory[cntr][1]                     #pull state
+                print 'self.simHistory[cntr][1]', self.simHistory[cntr][1]
+                print 'state.getV()', state.getV()
                 numFirings += (state.getV() >= 30).nonzero()[0].size #find number of neurons fired
                 cntr += 1
             fps.append(numFirings)
+            # print numFirings
         return np.average(fps)
 
 
