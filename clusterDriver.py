@@ -166,6 +166,7 @@ class Simulation():
         connectionNum = np.nonzero(self.simHistory[0][1].getS())[0].size  #get overall connection num
         #HACK should be able to pull number of each type of neuron, not hardcoded
         connectionNum -= 120   #100 connections for sensory neurons, 20 for motor neurons
+        self.simHistory[0][1].getI()
         return connectionNum
 
     #returns avg firing rate per second
@@ -178,8 +179,6 @@ class Simulation():
             numFirings = 0
             for state in xrange(sps):
                 state = self.simHistory[cntr][1]                     #pull state
-                print 'self.simHistory[cntr][1]', self.simHistory[cntr][1]
-                print 'state.getV()', state.getV()
                 numFirings += (state.getV() >= 30).nonzero()[0].size #find number of neurons fired
                 cntr += 1
             fps.append(numFirings)

@@ -101,27 +101,26 @@ class DynamicWorldState:
         return self.getAnimatState()[3]
 
     def getA(self):
-        return self.getAnimatState()[7][0]
+        return self.getAnimatState()[6][0]
 
     def getB(self):
-        return self.getAnimatState()[7][1]
+        return self.getAnimatState()[6][1]
 
     def getC(self):
-        return self.getAnimatState()[7][2]
+        return self.getAnimatState()[6][2]
 
     def getD(self):
-        return self.getAnimatState()[7][3]
+        return self.getAnimatState()[6][3]
 
     def getU(self):
-        return self.getAnimatState()[7][4]
+        return self.getAnimatState()[6][4]
 
     def getV(self):
-        print 'self.getAnimatState()[7][5]', self.getAnimatState()[7][5]
         return self.getAnimatState()[6][5]
 
     def getS(self):
-        return self.getAnimatState()[7][6]
+        return self.getAnimatState()[6][6]
 
     def getI(self):
-        return self.getAnimatState()[7][7]
+        return self.getAnimatState()[6][7]
 
