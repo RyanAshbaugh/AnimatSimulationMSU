@@ -165,8 +165,6 @@ class Simulation():
     def networkDensity(self):
         connectionNum = np.nonzero(self.simHistory[0][1].getS())[0].size  #get overall connection num
         #HACK should be able to pull number of each type of neuron, not hardcoded
-        connectionNum -= 120   #100 connections for sensory neurons, 20 for motor neurons
-        self.simHistory[0][1].getI()
         return connectionNum
 
     #returns avg firing rate per second
