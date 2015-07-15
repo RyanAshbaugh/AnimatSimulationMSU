@@ -463,7 +463,7 @@ class Network:
              self.M1adjusted[i] = self.M1_fp[i]*(.8**i) # gets the adjusted weight of the neuron having fired in the past, 20% reduction for each run in the past
              self.M2adjusted[i] = self.M2_fp[i]*(.8**i) # gets the adjusted weight of the neuron having fired in the past, 20% reduction for each run in the past
          # if self.M1adjusted != self.M2adjusted:
-         print 'sums: ',sum(self.M1adjusted),sum(self.M2adjusted)
+         # print 'sums: ',sum(self.M1adjusted),sum(self.M2adjusted)
 
 
          # print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('self.I[self.senseNeurons_A]',': '\

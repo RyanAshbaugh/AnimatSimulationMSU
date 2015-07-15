@@ -142,7 +142,6 @@ class Simulation():
     def minFoodDist(self,s):
         foodLocs = self.simEngine.getFoodLocs()              #get food locations
         pos = s.getPos()
-        print pos
         dists = []
         x1,y1 = pos
         for loc in foodLocs:

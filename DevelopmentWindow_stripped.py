@@ -48,7 +48,7 @@ class DevelopmentWindow():
         for x in range(1,11):
             simulation_object = clusterDriver.Simulation(1,x,self.sP,60000)
             object_metrics = simulation_object.startSimulation(["Energy","FoodsEaten","FindsFood","NetworkDensity","FiringRate","TotalMove"])
-            metrics_log = open('metrics_log_10_animats.txt', 'w')
+            metrics_log = open('metrics_log_10_animats.txt', 'a')
             metrics_log.write("%s\n" % object_metrics)
             metrics_log.close()
             print object_metrics
