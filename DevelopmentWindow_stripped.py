@@ -15,6 +15,7 @@ import json
 import SimParam
 import random
 import clusterDriver
+import time
 import NetworkModule
 import AnimatShell
 
@@ -55,12 +56,17 @@ class DevelopmentWindow():
         self.layoutHist = 300                   #y value holder for new aniimat config button placement
         self.layoutList = []                    # holds config/delete animat buttons and labels for any animats other than default
         # self.simEngine.startNewSim(self.sP)
-        simulation_object = clusterDriver.Simulation(1,1,self.sP,1000)
-        object_metrics = simulation_object.startSimulation(["Energy","FoodsEaten","FindsFood","NetworkDensity","FiringRate","TotalMove"])
-        metrics_log = open('metrics_log.txt', 'a')
-        metrics_log.write("%s\n" % object_metrics)
-        metrics_log.close()
-        print object_metrics
+        initial_time = time.time()
+        for x in range(1,11):
+            simulation_object = clusterDriver.Simulation(1,x,self.sP,60000)
+            object_metrics = simulation_object.startSimulation(["Energy","FoodsEaten","FindsFood","NetworkDensity","FiringRate","TotalMove"])
+            metrics_log = open('metrics_log_10_animats.txt', 'w')
+            metrics_log.write("%s\n" % object_metrics)
+            metrics_log.close()
+            print object_metrics
+        end_time = time.time()
+        sim_time = end_time-initial_time
+        print 'sim_time: ', sim_time
 
         # loop_value = True
         # while loop_value:

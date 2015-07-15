@@ -267,10 +267,10 @@ class Network:
                 lVal = self.L_radii[i] - np.sqrt( np.square(x - self.L_center[i][0]) + np.square(y - self.L_center[i][1]))
                 if rVal < 0.0: rVal = 0.0
                 if lVal < 0.0: lVal = 0.0
-                if rVal != 0:
-                    rVal = random.random()
-                if lVal != 0:
-                    lVal = random.random()
+                # if rVal != 0:
+                #     rVal = random.random()
+                # if lVal != 0:
+                #     lVal = random.random()
                 rr.append(rVal)
                 ll.append(lVal)
             self._neurons[index].setRL(rr,ll) # adds the vectors rr, ll to neuron using setRL method in neuronModule.py
