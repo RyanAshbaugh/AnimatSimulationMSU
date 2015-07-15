@@ -5,6 +5,7 @@ import SimParam
 import random
 import clusterDriver
 import time
+import pp
 
 
 
@@ -44,17 +45,33 @@ class DevelopmentWindow():
         self.layoutHist = 300                   #y value holder for new aniimat config button placement
         self.layoutList = []                    # holds config/delete animat buttons and labels for any animats other than default
         # self.simEngine.startNewSim(self.sP)
-        initial_time = time.time()
-        for x in range(1,11):
-            simulation_object = clusterDriver.Simulation(1,x,self.sP,60000)
+
+        # tuple of all parallel python servers to connect with
+        ppservers = ()
+        #ppservers = ("10.0.0.1",)
+
+        # Creates jobserver with automatically detected number of workers
+        job_server = pp.Server(ppservers=ppservers)
+        print "Starting pp with", job_server.get_ncpus(), "workers"
+
+        def simulate(animat_id):
+            simulation_object = clusterDriver.Simulation(1,animat_id,self.sP,60000)
             object_metrics = simulation_object.startSimulation(["Energy","FoodsEaten","FindsFood","NetworkDensity","FiringRate","TotalMove"])
             metrics_log = open('metrics_log_10_animats.txt', 'a')
             metrics_log.write("%s\n" % object_metrics)
             metrics_log.close()
             print object_metrics
+
+        initial_time = time.time()
+        number_of_animats = [x for x in range(1,11)]
+        jobs = [(job_server.submit(simulate,x)) for x in number_of_animats]
+        for job in jobs:
+            print job()
         end_time = time.time()
         sim_time = end_time-initial_time
         print 'sim_time: ', sim_time
+
+
 
         # loop_value = True
         # while loop_value:
