@@ -1,23 +1,11 @@
 __author__ = 'RJ'
 
-import Tkinter as tk
-from Graph import Graph
-from PIL import ImageTk
-from PIL import Image
-import numpy as np
-from VideoBar import VideoBar
-import GUIdriver
-import ParametersWindow
 import SimulationEngine
-import cPickle
-import tkFileDialog
-import json
 import SimParam
 import random
 import clusterDriver
 import time
-import NetworkModule
-import AnimatShell
+
 
 
 class DevelopmentWindow():
