@@ -87,7 +87,7 @@ class EvoDriver():
             self.saveGen(g)                                      #save in case of crash/connection break
 
         #Generates initial animat parameters
-    def generateParams(self,list,size,x0=-1,y0=-1,sigma=-1):
+    def generateParams(self,list,size,R_center=-1,L_center=-1,R_radii=-1,L_radii=-1):
         print "Generating Animats\n"
         for i in xrange(size):
             sP = SimParam.SimParam()
@@ -95,16 +95,21 @@ class EvoDriver():
             sP.setWorld(4,1,15,20,[(random.random()*20 - 20.0/2., random.random()*20 - 20.0/2.) for i in xrange(15)])
             sP.setWorld(5,1,15,20,[(random.random()*20 - 20.0/2., random.random()*20 - 20.0/2.) for i in xrange(15)])
             sP.setAnimParams(1,self.IDcntr,self.origin)
-            if x0 == -1:
+            if R_center == -1:
                 # replacement for random generation of variables used to determine synapse connections
-                sP.setR_center(i, [[-.7 + random.randrange(-1, 1, .01),.7 + random.randrange(-1, 1, .01)],[.7 + random.randrange(-1, 1, .01),.7 + random.randrange(-1, 1, .01)],\
-                        [.7 + random.randrange(-1, 1, .01),-.7 + random.randrange(-1, 1, .01)],[-.7 + random.randrange(-1, 1, .01),-.7 + random.randrange(-1, 1, .01)],\
-                                   [0 + random.randrange(-1, 1, .01),0 + random.randrange(-1, 1, .01)]])
-                sP.setL_center(i, [[.7 + random.randrange(-1, 1, .01),-.7 + random.randrange(-1, 1, .01)],[-.7 + random.randrange(-1, 1, .01),-.7 + random.randrange(-1, 1, .01)],\
-                        [1.2 + random.randrange(-1, 1, .01),0 + random.randrange(-1, 1, .01)],[-1.2+ random.randrange(-1, 1, .01),0 + random.randrange(-1, 1, .01)],\
-                                   [0 + random.randrange(-1, 1, .01),-1.0 + random.randrange(-1, 1, .01)]])
-                sP.setR_radii(i, [random.random() for x in xrange(5)])
-                sP.setL_radii(i, [random.random() for x in xrange(5)])
+                # sP.setR_center(i, [[-.7 + random.randrange(-1, 1, .01),.7 + random.randrange(-1, 1, .01)],[.7 + random.randrange(-1, 1, .01),.7 + random.randrange(-1, 1, .01)],\
+                #         [.7 + random.randrange(-1, 1, .01),-.7 + random.randrange(-1, 1, .01)],[-.7 + random.randrange(-1, 1, .01),-.7 + random.randrange(-1, 1, .01)],\
+                #                    [0 + random.randrange(-1, 1, .01),0 + random.randrange(-1, 1, .01)]])
+                # sP.setL_center(i, [[.7 + random.randrange(-1, 1, .01),-.7 + random.randrange(-1, 1, .01)],[-.7 + random.randrange(-1, 1, .01),-.7 + random.randrange(-1, 1, .01)],\
+                #         [1.2 + random.randrange(-1, 1, .01),0 + random.randrange(-1, 1, .01)],[-1.2+ random.randrange(-1, 1, .01),0 + random.randrange(-1, 1, .01)],\
+                #                    [0 + random.randrange(-1, 1, .01),-1.0 + random.randrange(-1, 1, .01)]])
+                # sP.setR_radii(i, [random.random() for x in xrange(5)])
+                # sP.setL_radii(i, [random.random() for x in xrange(5)])
+
+                sP.setR_center = (i,[[random.randrange(-1,1.001,.001),random.randrange(-1,1.001,.001)] for x in range(5)])
+                sP.setL_center = (i,[[random.randrange(-1,1.001,.001),random.randrange(-1,1.001,.001)] for x in range(5)])
+                sP.setR_radii = (i, [1.0,1.0,1.0,1.0,.5])
+                sP.setL_radii = (i, [1.0,1.0,.5,.5,1])
 
 
                 # #Unif[a,b), b > a: (b-a)*random + a
@@ -182,10 +187,15 @@ class EvoDriver():
         for i in xrange(self.newGenSize/2):
             r1 = random.randint(0,len(animats)-1)
             r2 = random.randint(0,len(animats)-1)
-            newx0 = self.animats[r1].getX0(1)   #hardcoded for 1 animat per sim
-            newy0 = self.animats[r2].getY0(1)   #hardcoded for 1 animat per sim
-            newsigma = self.animats[r2].getSigma(1)
-            self.generateParams(recomb,1,newx0,newy0,newsigma)
+            newR_center = self.animats[r1].getR_center(i)
+            newR_radii = self.animats[r1].getR_radii(i)
+            newL_center = self.animats[r2].getL_center(i)
+            newL_radii = self.animats[r2].getL_radii(i)
+
+            # newx0 = self.animats[r1].getX0(1)   #hardcoded for 1 animat per sim
+            # newy0 = self.animats[r2].getY0(1)   #hardcoded for 1 animat per sim
+            # newsigma = self.animats[r2].getSigma(1)
+            self.generateParams(recomb,1,newR_center,newR_radii,newL_center,newL_radii)
         return randMut+recomb
 
     #Generic version of initRun

@@ -51,17 +51,15 @@ class Network:
 
 
          if R_center == None: # if no values are passed in (unusual) then set up some random - may want to remove this
-             # self.x0 = [[np.random.random_sample()*3.01 - 1.5 for x in xrange(self.K)] for x in xrange(self.L)]
-             # self.y0 = [[np.random.random_sample()*3.01 - 1.5 for x in xrange(self.K)] for x in xrange(self.L)]
-             # self.sigma = [[np.random.exponential() for x in xrange(self.K)] for x in xrange(self.L)]
-             # self.sigma = [[1.0, 1.0, 0.0, 1.0, 1.0], [1.0, 1.0, 1.5, 0.0, 0.0]]
-             # self.x0 = [[-1.0, 1.0, 0.0, 0.7, -0.7], [-1.0, 1.0, 0.0, 0.0, 0.0]]
-             # self.y0 = [[1.0, 1.0, 0.0, -0.7, -0.7], [-1.0, -1.0, -1.0, 0.0, 0.0]]
 
-             self.R_center = [[-.7,.7],[.7,.7],[.7,-.7],[-.7,-.7], [0,0]]
-             self.L_center = [[.7,-.7],[-.7,-.7],[1.2,0],[-1.2,0],[0,-1] ]
+             # self.R_center = [[-.7,.7],[.7,.7],[.7,-.7],[-.7,-.7], [0,0]]
+             # self.L_center = [[.7,-.7],[-.7,-.7],[1.2,0],[-1.2,0],[0,-1] ]
+             # self.R_radii = [1.0,1.0,1.0,1.0,.5]
+             # self.L_radii = [1.0,1.0,.15,.15,1]
+             self.R_center = [[random.randrange(-1,1.001,.001),random.randrange(-1,1.001,.001)] for x in range(5)]
+             self.L_center = [[random.randrange(-1,1.001,.001),random.randrange(-1,1.001,.001)] for x in range(5)]
              self.R_radii = [1.0,1.0,1.0,1.0,.5]
-             self.L_radii = [1.0,1.0,.15,.15,1]
+             self.L_radii = [1.0,1.0,.5,.5,1]
 
          else:
              self.R_center = R_center

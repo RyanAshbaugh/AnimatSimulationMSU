@@ -64,7 +64,7 @@ class DevelopmentWindow():
 
         initial_time = time.time()
         number_of_animats = [x for x in range(1,11)]
-        jobs = [(job_server.submit(simulate,x)) for x in number_of_animats]
+        jobs = [(job_server.submit(simulate,(x,))) for x in number_of_animats]
         for job in jobs:
             print job()
         end_time = time.time()
