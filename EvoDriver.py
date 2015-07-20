@@ -109,7 +109,7 @@ class EvoDriver():
                 sP.setR_center = (i,[[random.randrange(-1,1.001,.001),random.randrange(-1,1.001,.001)] for x in range(5)])
                 sP.setL_center = (i,[[random.randrange(-1,1.001,.001),random.randrange(-1,1.001,.001)] for x in range(5)])
                 sP.setR_radii = (i, [1.0,1.0,1.0,1.0,.5])
-                sP.setL_radii = (i, [1.0,1.0,.5,.5,1])
+                sP.setL_radii = (i, [1.0,1.0,.15,.15,1])
 
 
                 # #Unif[a,b), b > a: (b-a)*random + a

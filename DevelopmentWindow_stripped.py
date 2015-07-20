@@ -6,6 +6,7 @@ import random
 import clusterDriver
 import time
 import pp
+import os
 
 
 
@@ -25,14 +26,6 @@ class DevelopmentWindow():
         self.worlds.append([1,20,20,fLocs4])
         self.worlds.append([1,20,20,fLocs5])
 
-        #parameters
-        self.sP = SimParam.SimParam()
-        self.sP.setWorld(1,self.worlds[0][0],self.worlds[0][1],self.worlds[0][2],self.worlds[0][3])   #change first index to change default world
-        self.sP.setWorld(2,self.worlds[1][0],self.worlds[1][1],self.worlds[1][2],self.worlds[1][3])
-        self.sP.setWorld(3,self.worlds[2][0],self.worlds[2][1],self.worlds[2][2],self.worlds[2][3])
-        self.sP.setWorld(4,self.worlds[3][0],self.worlds[3][1],self.worlds[3][2],self.worlds[3][3])
-        self.sP.setWorld(5,self.worlds[4][0],self.worlds[4][1],self.worlds[4][2],self.worlds[4][3])
-        self.sP.setAnimParams(1,1,(0,0))
         self.paused = True                     #paused?
         self.lastTime = 0
         self.sim_msps = 0
@@ -46,16 +39,30 @@ class DevelopmentWindow():
         self.layoutList = []                    # holds config/delete animat buttons and labels for any animats other than default
         # self.simEngine.startNewSim(self.sP)
 
+        #parameters
+        self.sP = SimParam.SimParam()
+        self.sP.setWorld(1,self.worlds[0][0],self.worlds[0][1],self.worlds[0][2],self.worlds[0][3])   #change first index to change default world
+        self.sP.setWorld(2,self.worlds[1][0],self.worlds[1][1],self.worlds[1][2],self.worlds[1][3])
+        self.sP.setWorld(3,self.worlds[2][0],self.worlds[2][1],self.worlds[2][2],self.worlds[2][3])
+        self.sP.setWorld(4,self.worlds[3][0],self.worlds[3][1],self.worlds[3][2],self.worlds[3][3])
+        self.sP.setWorld(5,self.worlds[4][0],self.worlds[4][1],self.worlds[4][2],self.worlds[4][3])
+        self.sP.setAnimParams(1,1,(0,0))
+
         # tuple of all parallel python servers to connect with
         ppservers = ()
         #ppservers = ("10.0.0.1",)
 
         # Creates jobserver with automatically detected number of workers
         job_server = pp.Server(ppservers=ppservers)
-        print "Starting pp with", job_server.get_ncpus(), "workers"
+        # print "Starting pp with", job_server.get_ncpus(), "workers"
 
-        def simulate(animat_id):
-            simulation_object = clusterDriver.Simulation(1,animat_id,self.sP,60000)
+        # def setparams():
+        #     self.sP = SimParam.SimParam()
+        #     return self.sP
+
+        def simulate(animat_id,simparam):
+            simulation_object = clusterDriver.Simulation(1,animat_id,simparam,60000)
+            print os.environ["HOSTNAME"]
             object_metrics = simulation_object.startSimulation(["Energy","FoodsEaten","FindsFood","NetworkDensity","FiringRate","TotalMove"])
             metrics_log = open('metrics_log_10_animats.txt', 'a')
             metrics_log.write("%s\n" % object_metrics)
@@ -64,7 +71,7 @@ class DevelopmentWindow():
 
         initial_time = time.time()
         number_of_animats = [x for x in range(1,11)]
-        jobs = [(job_server.submit(simulate,(x,))) for x in number_of_animats]
+        jobs = [(job_server.submit(simulate,(x,self.sP,os),(),("clusterDriver",))) for x in number_of_animats]
         for job in jobs:
             print job()
         end_time = time.time()
