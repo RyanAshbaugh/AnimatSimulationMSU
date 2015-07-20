@@ -67,8 +67,8 @@ class Network:
              # self.x0 = [[-1.0, 1.0, 0.0, 0.7, -0.7], [-1.0, 1.0, 0.0, 0.0, 0.0]]
              # self.y0 = [[1.0, 1.0, 0.0, -0.7, -0.7], [-1.0, -1.0, -1.0, 0.0, 0.0]]
 
-             self.R_center = [[-.7,.7],[.7,.7],[.7,-.7],[-.7,-.7], [0,0]]
-             self.L_center = [[.7,-.7],[-.7,-.7],[1.2,0],[-1.2,0],[0,-1] ]
+             self.R_center = [[random.randrange(-1,1.001,.001),random.randrange(-1,1.001,.001)] for x in range(5)]
+             self.L_center = [[random.randrange(-1,1.001,.001),random.randrange(-1,1.001,.001)] for x in range(5)]
              self.R_radii = [1.0,1.0,1.0,1.0,.5]
              self.L_radii = [1.0,1.0,.15,.15,1]
 
