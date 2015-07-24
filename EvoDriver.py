@@ -7,7 +7,7 @@ so task distribution needs to handled differently, no need for cluster driver
 
 '''
 import clusterDriver as cd
-import spur # SSH client
+#import spur # SSH client
 import pp
 import os
 import numpy as np
@@ -38,10 +38,10 @@ class EvoDriver():
         self.worlds.append([1,15,20,fLocs3])
        
         #EvoDriver Variables
-        self.cycleNum = 2       #set how many generations to run in evolution
+        self.cycleNum = 1       #set how many generations to run in evolution
         self.reRankNum = 100      #how many new animats to run before reRanking
         self.nodeNum = 8         #how many nodes on cluster - for load-balancing - ADJUST for new hardware
-        self.maxAnimats = 1000    #how large list of parameters should be
+        self.maxAnimats = 10    #how large list of parameters should be
         self.newGenSize = 100    #how many new animats to generate each iteration of evo alg
         ## NOTE when adding metrics to toTrack, make sure they are included in Simulation.filterResults
         self.toTrack = ["Energy","FoodsEaten","FindsFood","NetworkDensity","FiringRate","TotalMove"]  #names of metrics to track - keys to dictionary
@@ -55,9 +55,10 @@ class EvoDriver():
         self.resultsHistory = []  #holds metric results from each generation
         self.animatHistory = []   #holds animat parameter configuration from each generation
 
+        input_var = False
         ## Setup
-        input = raw_input("Load data from file? (y/n): ")
-        if input == "y":
+        #input = raw_input("Load data from file? (y/n): ")
+        if input_var:
             lastGenNum = self.loadGen()                         #load data from save file
             self.run(genNum=lastGenNum+1)
         else:
@@ -97,8 +98,8 @@ class EvoDriver():
             sP.setAnimParams(1,self.IDcntr,self.origin)
             if R_center == -1:
                 # replacement for random generation of variables used to determine synapse connections
-                self.R_center = [[random.randrange(-1,1.001,.001),random.randrange(-1,1.001,.001)] for x in range(5)]
-                self.L_center = [[random.randrange(-1,1.001,.001),random.randrange(-1,1.001,.001)] for x in range(5)]
+                self.R_center = [[random.randrange(-1000,1000,1)/1000,random.randrange(-1000,1000,1)/1000] for x in range(5)]
+                self.L_center = [[random.randrange(-1000,1000,1)/1000,random.randrange(-1000,1000,1)/1000] for x in range(5)]
                 self.R_radii = [1.0,1.0,1.0,1.0,.5]
                 self.L_radii = [1.0,1.0,.15,.15,1]
 
@@ -224,7 +225,8 @@ class EvoDriver():
         print "Simulation Complete\n"
         #input = raw_input("Enter 1 to save or anything else to close: ")
         #if input == "1":
-        fn = raw_input("Enter filename to save results: ")
+        #fn = raw_input("Enter filename to save results: ")
+        fn = "parallel_evodriver_1"
         print "Saving top animat for use in GUI version"
         with open(fn+'_topAnimat.txt','w') as f:
             json.dump(self.animats[-1].getAnimParams(1),f)
