@@ -5,7 +5,6 @@ Simulates brain, contains all neurons
 
 
 
- #IAM JAMES
 '''
 
 from NeuronModule import InhibitoryNeuron
@@ -29,7 +28,7 @@ class Network:
          # print inspect.stack()
          self.FIRED_VALUE = 30 # mV
          self.DT = 1 # ms
-         self.numExcitatory = 0
+         self.numExcitatory = 0 # number of each type of neuron
          self.numInhibitory = 0
          self.numMotor = 0
          self.numSensory_A = 0
@@ -41,10 +40,10 @@ class Network:
          self.K = 5
          self.sense_B_fired = [0 for i in range(10)]
          self.sense_A_fired = [0 for i in range(10)]
-         self.M1_fp = [0,0,0,0,0,0,0,0]
-         self.M2_fp = [0,0,0,0,0,0,0,0]
-         self.M1adjusted = [0,0,0,0,0,0,0,0]
-         self.M2adjusted = [0,0,0,0,0,0,0,0]
+         self.M1_fp = [0,0,0,0,0,0,0,0] # firing pattern of the M1 motor over the last 8 iterations (1 or 0)
+         self.M2_fp = [0,0,0,0,0,0,0,0] # firing pattern of the M2 motor over the last 8 iterations
+         self.M1adjusted = [0,0,0,0,0,0,0,0] # firing pattern of the M1 motor over the last 8 iterations adjusted based on 30% decay each iteration
+         self.M2adjusted = [0,0,0,0,0,0,0,0] # firing pattern of the M2 motor over the last 8 iterations adjusted based on 30% decay each iteration
          self.count = 0
          self.motor_neuron1_count = 0
          self.motor_neuron2_count = 0
@@ -56,10 +55,10 @@ class Network:
              # self.L_center = [[.7,-.7],[-.7,-.7],[1.2,0],[-1.2,0],[0,-1] ]
              # self.R_radii = [1.0,1.0,1.0,1.0,.5]
              # self.L_radii = [1.0,1.0,.15,.15,1]
-             self.R_center = [[random.randrange(-1,1.001,.001),random.randrange(-1,1.001,.001)] for x in range(5)]
-             self.L_center = [[random.randrange(-1,1.001,.001),random.randrange(-1,1.001,.001)] for x in range(5)]
-             self.R_radii = [1.0,1.0,1.0,1.0,.5]
-             self.L_radii = [1.0,1.0,.15,.15,1]
+             self.R_center = [[random.randrange(-1000,1000,1)/1000,random.randrange(-1000,1000,1)/1000] for x in range(5)]
+             self.L_center = [[random.randrange(-1000,1000,1)/1000,random.randrange(-1000,1000,1)/1000] for x in range(5)]
+             self.R_radii = (i, [1.0,1.0,1.0,1.0,.5])
+             self.L_radii = (i, [1.0,1.0,.15,.15,1])
 
          else:
              self.R_center = R_center

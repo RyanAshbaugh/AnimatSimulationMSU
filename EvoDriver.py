@@ -7,7 +7,7 @@ so task distribution needs to handled differently, no need for cluster driver
 
 '''
 import clusterDriver as cd
-import spur # SSH client
+#import spur # SSH client
 import pp
 import os
 import numpy as np
@@ -38,15 +38,17 @@ class EvoDriver():
         self.worlds.append([1,15,20,fLocs3])
        
         #EvoDriver Variables
-        self.cycleNum = 2       #set how many generations to run in evolution
+        self.cycleNum = 1       #set how many generations to run in evolution
         self.reRankNum = 100      #how many new animats to run before reRanking
-        self.nodeNum = 8         #how many nodes on cluster - for load-balancing - ADJUST for new hardware
-        self.maxAnimats = 1000    #how large list of parameters should be
+        self.nodeNum = 5         #how many nodes on cluster - for load-balancing - ADJUST for new hardware
+        self.maxAnimats = 5    #how large list of parameters should be
         self.newGenSize = 100    #how many new animats to generate each iteration of evo alg
         ## NOTE when adding metrics to toTrack, make sure they are included in Simulation.filterResults
         self.toTrack = ["Energy","FoodsEaten","FindsFood","NetworkDensity","FiringRate","TotalMove"]  #names of metrics to track - keys to dictionary
-        self.nodeP2Ps = [("10.2.1." + str(i) + ":60000") for i in xrange(2,12)]     #Cluster-specific P2P (peer-to-peer) address for each node on cluster (now dogwood) ...NB must change this for other clusters
-        self.js = pp.Server(ncpus=0,ppservers=tuple(self.nodeP2Ps[0:8])) # prevents PP from using nodes on job server 
+        #   replaced by line 65 # self.nodeP2Ps = [("10.2.1." + str(i) + ":60000") for i in xrange(2,12)]     #Cluster-specific P2P (peer-to-peer) address for each node on cluster (
+        # now dogwood) ...NB must
+        # change this for other clusters
+        #   replaced by line 65 # self.js = pp.Server(ncpus=0,ppservers=tuple(self.nodeP2Ps[0:8])) # prevents PP from using nodes on job server
         self.L = 3                #number of parameter pairs used for constructing network connection weights
         self.K = 5                # number of location parameters for each parameter
         self.animats = []         #list of simParams
@@ -55,9 +57,20 @@ class EvoDriver():
         self.resultsHistory = []  #holds metric results from each generation
         self.animatHistory = []   #holds animat parameter configuration from each generation
 
+        lines = [(line.rstrip('\n')+":35000") for line in open('nodefile.txt')]
+
+        # tuple of all parallel python servers to connect with
+        ppservers = (lines[i+1] for i in range(len(lines)))
+        #ppservers = ("10.0.0.1",)
+
+        # Creates jobserver with automatically detected number of workers
+        self.js = pp.Server(ncpus=1,ppservers=ppservers)
+        # print "Starting pp with", job_server.get_ncpus(), "workers"
+
         ## Setup
-        input = raw_input("Load data from file? (y/n): ")
-        if input == "y":
+        input_var = False
+        #input = raw_input("Load data from file? (y/n): ")
+        if input_var:
             lastGenNum = self.loadGen()                         #load data from save file
             self.run(genNum=lastGenNum+1)
         else:
@@ -106,8 +119,8 @@ class EvoDriver():
                 # sP.setR_radii(i, [random.random() for x in xrange(5)])
                 # sP.setL_radii(i, [random.random() for x in xrange(5)])
 
-                sP.setR_center = (i,[[random.randrange(-1,1.001,.001),random.randrange(-1,1.001,.001)] for x in range(5)])
-                sP.setL_center = (i,[[random.randrange(-1,1.001,.001),random.randrange(-1,1.001,.001)] for x in range(5)])
+                self.R_center = [[random.randrange(-1000,1000,1)/1000,random.randrange(-1000,1000,1)/1000] for x in range(5)]
+                self.L_center = [[random.randrange(-1000,1000,1)/1000,random.randrange(-1000,1000,1)/1000] for x in range(5)]
                 sP.setR_radii = (i, [1.0,1.0,1.0,1.0,.5])
                 sP.setL_radii = (i, [1.0,1.0,.15,.15,1])
 
@@ -207,6 +220,7 @@ class EvoDriver():
         nodeDrivers = []
         for i in xrange(self.nodeNum):                          #need to create driver loaded with animats for each node
             temp = animats[i*simsPerNode:(i+1)*simsPerNode]#extract animats to run on current driver
+            print temp
             nodeDrivers.append(cd.EvoClusterDriver(i+1,temp,self.toTrack))
         if not(extra == 0):
             temp = animats[-extra:]                        #extract remaining animats

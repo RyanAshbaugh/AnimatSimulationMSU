@@ -37,6 +37,9 @@ class DevelopmentWindow():
         self.developmentHistory = {}
         self.layoutHist = 300                   #y value holder for new aniimat config button placement
         self.layoutList = []                    # holds config/delete animat buttons and labels for any animats other than default
+        self.animats = []
+        self.origin = (0,0) # starting position
+        self.IDcntr = 1          #keeps track so each animat gets unique id number
         # self.simEngine.startNewSim(self.sP)
 
         #parameters
@@ -61,7 +64,7 @@ class DevelopmentWindow():
         #     return self.sP
 
         def simulate(animat_id,simparam):
-            simulation_object = clusterDriver.Simulation(1,animat_id,simparam,60000)
+            simulation_object = clusterDriver.Simulation(1,animat_id,simparam,1000)
             print os.environ["HOSTNAME"]
             object_metrics = simulation_object.startSimulation(["Energy","FoodsEaten","FindsFood","NetworkDensity","FiringRate","TotalMove"])
             metrics_log = open('metrics_log_10_animats.txt', 'a')
@@ -69,14 +72,57 @@ class DevelopmentWindow():
             metrics_log.close()
             print object_metrics
 
+        num_animats = 10
+        number_of_animats_list = [x for x in range(1,11)]
+        self.generateParams(self.animats,num_animats)
         initial_time = time.time()
-        number_of_animats = [x for x in range(1,11)]
-        jobs = [(job_server.submit(simulate,(x,self.sP,os),(),("clusterDriver",))) for x in number_of_animats]
+        jobs = [(job_server.submit(simulate,(x,self.animats[x-1]),(),("clusterDriver","os"))) for x in number_of_animats_list]
         for job in jobs:
             print job()
         end_time = time.time()
         sim_time = end_time-initial_time
         print 'sim_time: ', sim_time
+
+    def generateParams(self,list,size,R_center=-1,L_center=-1,R_radii=-1,L_radii=-1):
+            print "Generating Animats\n"
+            for i in xrange(size):
+                sP = SimParam.SimParam()
+                for j,world in enumerate(self.worlds): sP.setWorld(j+1,world[0],world[1],world[2],world[3])
+                sP.setWorld(4,1,15,20,[(random.random()*20 - 20.0/2., random.random()*20 - 20.0/2.) for i in xrange(15)])
+                sP.setWorld(5,1,15,20,[(random.random()*20 - 20.0/2., random.random()*20 - 20.0/2.) for i in xrange(15)])
+                sP.setAnimParams(1,self.IDcntr,self.origin)
+                if R_center == -1:
+                    # replacement for random generation of variables used to determine synapse connections
+                    # sP.setR_center(i, [[-.7 + random.randrange(-1, 1, .01),.7 + random.randrange(-1, 1, .01)],[.7 + random.randrange(-1, 1, .01),.7 + random.randrange(-1, 1, .01)],\
+                    #         [.7 + random.randrange(-1, 1, .01),-.7 + random.randrange(-1, 1, .01)],[-.7 + random.randrange(-1, 1, .01),-.7 + random.randrange(-1, 1, .01)],\
+                    #                    [0 + random.randrange(-1, 1, .01),0 + random.randrange(-1, 1, .01)]])
+                    # sP.setL_center(i, [[.7 + random.randrange(-1, 1, .01),-.7 + random.randrange(-1, 1, .01)],[-.7 + random.randrange(-1, 1, .01),-.7 + random.randrange(-1, 1, .01)],\
+                    #         [1.2 + random.randrange(-1, 1, .01),0 + random.randrange(-1, 1, .01)],[-1.2+ random.randrange(-1, 1, .01),0 + random.randrange(-1, 1, .01)],\
+                    #                    [0 + random.randrange(-1, 1, .01),-1.0 + random.randrange(-1, 1, .01)]])
+                    # sP.setR_radii(i, [random.random() for x in xrange(5)])
+                    # sP.setL_radii(i, [random.random() for x in xrange(5)])
+
+                    self.R_center = [[random.randrange(-1000,1000,1)/1000,random.randrange(-1000,1000,1)/1000] for x in range(5)]
+                    self.L_center = [[random.randrange(-1000,1000,1)/1000,random.randrange(-1000,1000,1)/1000] for x in range(5)]
+                    sP.setR_radii = (i, [1.0,1.0,1.0,1.0,.5])
+                    sP.setL_radii = (i, [1.0,1.0,.15,.15,1])
+
+
+                    # #Unif[a,b), b > a: (b-a)*random + a
+                    # sP.setX0(1,[[np.random.random_sample()*3.01 - 1.5 for x in xrange(self.K)] for x in xrange(self.L)]) #hardcoded for only 1 animat per simulation
+                    # sP.setY0(1,[[np.random.random_sample()*3.01 - 1.5 for x in xrange(self.K)] for x in xrange(self.L)]) #hardcoded for only 1 animat per simulation
+                    # sP.setSigma(1,[[np.random.exponential() for x in xrange(self.K)] for x in xrange(self.L)])
+                else:
+                    sP.setR_center(i, R_center)
+                    sP.setL_center(i, L_center)
+                    sP.setR_radii(i, R_radii)
+                    sP.setL_radii(i, L_radii)
+
+                    # sP.setX0(1,x0) #hardcoded for only 1 animat per simulation
+                    # sP.setY0(1,y0) #hardcoded for only 1 animat per simulation
+                    # sP.setSigma(1,sigma)
+                list.append(sP)
+                self.IDcntr += 1
 
 
 
