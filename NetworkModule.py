@@ -50,13 +50,13 @@ class Network:
          self.color = "#ffffff"
          self.sense_B_fired = [0 for i in range(10)]
          self.sense_A_fired = [0 for i in range(10)]
-         self.M1_fp = [0,0,0,0,0,0,0,0]
-         self.M2_fp = [0,0,0,0,0,0,0,0]
-         self.M1adjusted = [0,0,0,0,0,0,0,0]
-         self.M2adjusted = [0,0,0,0,0,0,0,0]
-         self.count = 0
-         self.motor_neuron1_count = 0
-         self.motor_neuron2_count = 0
+         self.M1_fp = [0,0,0,0,0,0,0,0] # M1's firing pattern from the last 8 iterations of the movement in binary
+         self.M2_fp = [0,0,0,0,0,0,0,0] # M2's firing pattern form the last 8 iterations of the movement in binary
+         self.M1adjusted = [0,0,0,0,0,0,0,0] # M1's firing pattern from the last 8 iterations of the movement adjusted for 30% decay each iteartion
+         self.M2adjusted = [0,0,0,0,0,0,0,0] # M2's firing pattern from the last 8 iterations of the movement adjusted for 30% decay each iteration
+         self.count = 0 # count of iterations through eat move smell
+         self.motor_neuron1_count = 0 # how many times motor neuron 1 fired
+         self.motor_neuron2_count = 0 # how many times motor neuron 2 fired
 
 
          if R_center == None: # if no values are passed in (unusual) then set up some random - may want to remove this
@@ -67,12 +67,14 @@ class Network:
              # self.x0 = [[-1.0, 1.0, 0.0, 0.7, -0.7], [-1.0, 1.0, 0.0, 0.0, 0.0]]
              # self.y0 = [[1.0, 1.0, 0.0, -0.7, -0.7], [-1.0, -1.0, -1.0, 0.0, 0.0]]
 
-             self.R_center = [[random.randrange(-1000,1000,1)/1000,random.randrange(-1000,1000,1)/1000] for x in range(5)]
+             self.R_center = [[random.randrange(-1000,1000,1)/1000,random.randrange(-1000,1000,1)/1000] for x in range(5)] # method for setting R_center to random number between -1
+             # and 1
              self.L_center = [[random.randrange(-1000,1000,1)/1000,random.randrange(-1000,1000,1)/1000] for x in range(5)]
-             self.R_radii = [1.0,1.0,1.0,1.0,.5]
-             self.L_radii = [1.0,1.0,.15,.15,1]
+             self.R_radii = [1.0,1.0,1.0,1.0,.5] # sets the locatins for the R_radii
+             self.L_radii = [1.0,1.0,.15,.15,1] # sets the locations for the L_radii
 
          else:
+             # if R & L center and radii are passed in then these values are set to equal the passed in args
              self.R_center = R_center
              self.L_center = L_center
              self.R_radii = R_radii
@@ -88,20 +90,20 @@ class Network:
          self.senseNeuronLocations_B = np.array([],ndmin=2) # holds locations on animat
          self.numSensory_B = 0
 
-         self.inhibitoryNeurons = []
-         self.excitatoryNeurons = []
+         self.inhibitoryNeurons = [] # holds indices of inhibitory neurons
+         self.excitatoryNeurons = [] # holds indices of excitatory neurons
          self.senseNeurons_A = [] # holds neuron indices
          self.senseNeurons_B = [] # holds neuron indices
-         self.motorNeurons = []
-         self.hungerNeurons = []
+         self.motorNeurons = [] # holds motor neuron indices
+         self.hungerNeurons = [] # holds hunger neuron indices
 
-         self.attribute_list = []
-         self.indices_location = []
-         self.fired = []
+         self.attribute_list = [] # used in getNeurons function to hold attributes of the gotten neuron
+         self.indices_location = [] # holds the locations of the neurons based on indices
+         self.fired = [] # holds indices of neurons that have fired
 
          #These will be dictionaries of Lists eventually for different types of sensory neurons!
          self.sensitivity_A = np.array([], ndmin = 2) # sensitivity to smell A: hard-coded to
-         self.sensitivity_B = np.array([], ndmin = 2)
+         self.sensitivity_B = np.array([], ndmin = 2) # sensitivity to smell A: hard-coded to
          self.indices_list = []        # initializes list to store indices of neurons
          self.neuron_circle_loc = {'inhibitory':[], 'excitatory':[], 'motor':[], 'sensory_A':[], 'sensory_B':[], 'hunger':[]} # contains indices and xy position [indice, x, y]
 
@@ -114,31 +116,31 @@ class Network:
          self.v = np.insert(self.v, neuron_index, self.default_v)        # sets v
          self.u = np.insert(self.u, neuron_index, self.default_u)        # sets u = b*v
          if typea == 'inhibitory':                    #  can be used later to change specific variables for types of neurons
-              circle['inhibitory'].append([neuron_index, position])
-              self.inhibitoryNeurons.append(neuron_index)
-              self.indices_location.append(position)
+              circle['inhibitory'].append([neuron_index, position]) # appends neuron's location and index to dictionary
+              self.inhibitoryNeurons.append(neuron_index) # adds neuron to its own type's list
+              self.indices_location.append(position) # appends position to indice location list
          if typea == 'excitatory':
-              circle['excitatory'].append([neuron_index, position])
-              self.excitatoryNeurons.append(neuron_index)
-              self.indices_location.append(position)
+              circle['excitatory'].append([neuron_index, position]) # appends neuron's location and index to dictionary
+              self.excitatoryNeurons.append(neuron_index) # adds neuron to its own type's list
+              self.indices_location.append(position) # appends position to indice location list
          if typea == 'sensory_A':
-              circle['sensory_A'].append([neuron_index, position])
-              self.sensitivity_A = np.append(self.sensitivity_A, sensitivity)
-              self.senseNeurons_A.append(neuron_index)
-              self.indices_location.append(position)
+              circle['sensory_A'].append([neuron_index, position]) # appends neuron's location and index to dictionary
+              self.sensitivity_A = np.append(self.sensitivity_A, sensitivity) # appends the sensitivity of the A neurons to list
+              self.senseNeurons_A.append(neuron_index) # adds neuron to its own type's list
+              self.indices_location.append(position) # appends position to indice location list
          if typea == 'sensory_B':
-              circle['sensory_B'].append([neuron_index, position])
-              self.sensitivity_B = np.append(self.sensitivity_B, sensitivity)
-              self.senseNeurons_B.append(neuron_index)
-              self.indices_location.append(position)
+              circle['sensory_B'].append([neuron_index, position]) # appends neuron's location and index to dictionary
+              self.sensitivity_B = np.append(self.sensitivity_B, sensitivity) # appends the sensitivity to the B neurons list
+              self.senseNeurons_B.append(neuron_index) # adds neuron to its own type's list
+              self.indices_location.append(position) # appends position to indice location list
          if typea == 'motor':
-              circle['motor'].append([neuron_index, position])
-              self.motorNeurons.append(neuron_index)
-              self.indices_location.append(position)
+              circle['motor'].append([neuron_index, position]) # appends neuron's location and index to dictionary
+              self.motorNeurons.append(neuron_index) # adds neuron to its own type's list
+              self.indices_location.append(position) # appends position to indice location list
          if typea == 'hunger':
-              circle['hunger'].append([neuron_index, position])
-              self.hungerNeurons.append(neuron_index)
-              self.indices_location.append(position)
+              circle['hunger'].append([neuron_index, position]) # appends neuron's location and index to dictionary
+              self.hungerNeurons.append(neuron_index) # adds neuron to its own type's list
+              self.indices_location.append(position) # appends position to indice location list
 
 
      def generateNeurons(self):
@@ -146,14 +148,14 @@ class Network:
           for i in xrange(40): # 0 to 39
                loc = (np.cos(2*np.pi*(i+0.5)/40),np.sin(2*np.pi*(i+0.5)/40))
                if i < 20: # upper half-circle
-                    if i % 2 == 0:
-                         self.add_neuron("sensory_A", NeuronIndex, loc, self.neuron_circle_loc)
-                         if self.numSensory_A == 0: self.senseNeuronLocations_A = np.array([loc[0],loc[1]],ndmin=2)
+                    if i % 2 == 0: # used to get every other neuron
+                         self.add_neuron("sensory_A", NeuronIndex, loc, self.neuron_circle_loc) # adds sense A neuron
+                         if self.numSensory_A == 0: self.senseNeuronLocations_A = np.array([loc[0],loc[1]],ndmin=2) # used to put first entry into locations array
                          else: self.senseNeuronLocations_A = np.insert(self.senseNeuronLocations_A, self.numSensory_A, np.array((loc[0], loc[1])), axis = 0)
                          self.numSensory_A += 1
                     else:
-                         self.add_neuron("sensory_B", NeuronIndex, loc, self.neuron_circle_loc)
-                         if self.numSensory_B == 0: self.senseNeuronLocations_B = np.array([loc[0],loc[1]],ndmin=2)
+                         self.add_neuron("sensory_B", NeuronIndex, loc, self.neuron_circle_loc) # adds sense B neuron
+                         if self.numSensory_B == 0: self.senseNeuronLocations_B = np.array([loc[0],loc[1]],ndmin=2) # used to put first entry into locations array
                          else: self.senseNeuronLocations_B = np.insert(self.senseNeuronLocations_B, self.numSensory_B, np.array((loc[0], loc[1])), axis = 0)
                          self.numSensory_B += 1
                else:
@@ -166,7 +168,7 @@ class Network:
           NeuronIndex += 1
           self.add_neuron("motor", NeuronIndex, (-1.2, 0), self.neuron_circle_loc)
           NeuronIndex += 1
-          temp_value_list = self.neuron_circle_loc.values()
+          temp_value_list = self.neuron_circle_loc.values() # gets the value ( in the form [indice,(x,y)])
           for value in temp_value_list:
                for value2 in value:
                     if len(value2) > 0:
@@ -181,23 +183,24 @@ class Network:
           #set up ligand and receptor lists for each neuron in circle based on parameters
 
           # initializes self.S which will later hold connection weights
-          self.S = np.zeros((len(self.indices_list), len(self.indices_list)), dtype = np.float32)
+          self.S = np.zeros((len(self.indices_list), len(self.indices_list)), dtype = np.float32) # creates an array for all connection weights filled with zeros
           rl_array = np.zeros((len(self.indices_list), 10), dtype= np.float32)   # sets up array for receptor and ligand lists, [index, r, r, r, r, r, l, l, l, l, l]
 
-          for type_list in self.neuron_circle_loc['excitatory'], self.neuron_circle_loc['sensory_A'], self.neuron_circle_loc['sensory_B']:
+          for type_list in self.neuron_circle_loc['excitatory'], self.neuron_circle_loc['sensory_A'], self.neuron_circle_loc['sensory_B']: # sets r and l values for excitatory,
+          # A and B neurons
                for index in type_list:
                     x, y = index[1][0], index[1][1]         # sets x and y equal to the neurons circle location x y
-                    for i in xrange(5):
-                         rVal = self.R_radii[i] - np.sqrt( np.square(x - self.R_center[i][0]) + np.square(y - self.R_center[i][1]))
-                         lVal = self.L_radii[i] - np.sqrt( np.square(x - self.L_center[i][0]) + np.square(y - self.L_center[i][1]))
-                         rVal = random.random()
-                         lVal = random.random()
-                         if rVal < 0.0: rVal = 0.0
+                    for i in xrange(5): # the four quadrants and the center hunger neuron all have circles in varying locations and radii used to determine connections
+                         rVal = self.R_radii[i] - np.sqrt( np.square(x - self.R_center[i][0]) + np.square(y - self.R_center[i][1])) # sets r val
+                         lVal = self.L_radii[i] - np.sqrt( np.square(x - self.L_center[i][0]) + np.square(y - self.L_center[i][1])) # sets l val
+                         #rVal = random.random()
+                         #lVal = random.random()
+                         if rVal < 0.0: rVal = 0.0 # if below zero, set to zero
                          if lVal < 0.0: lVal = 0.0
                          print 'rVal', rVal
                          print 'lVal', lVal
-                         rl_array[index[0]][i] = rVal
-                         rl_array[index[0]][i+5] = lVal
+                         rl_array[index[0]][i] = rVal # sets the rval
+                         rl_array[index[0]][i+5] = lVal # sets the lval
 
           for index in self.neuron_circle_loc['hunger']:
                rl_array[index[0]][4] = 1
