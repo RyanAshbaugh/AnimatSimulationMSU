@@ -146,7 +146,7 @@ class Network:
      def generateNeurons(self):
           NeuronIndex = 0               # index of neuron
           for i in xrange(40): # 0 to 39
-               loc = (np.cos(2*np.pi*(i+0.5)/40),np.sin(2*np.pi*(i+0.5)/40))
+               loc = (np.cos(2*np.pi*(i+0.5)/40),np.sin(2*np.pi*(i+0.5)/40)) # used to find all the neuron locations on the circle
                if i < 20: # upper half-circle
                     if i % 2 == 0: # used to get every other neuron
                          self.add_neuron("sensory_A", NeuronIndex, loc, self.neuron_circle_loc) # adds sense A neuron
@@ -159,7 +159,7 @@ class Network:
                          else: self.senseNeuronLocations_B = np.insert(self.senseNeuronLocations_B, self.numSensory_B, np.array((loc[0], loc[1])), axis = 0)
                          self.numSensory_B += 1
                else:
-                    self.add_neuron("excitatory", NeuronIndex, loc, self.neuron_circle_loc)
+                    self.add_neuron("excitatory", NeuronIndex, loc, self.neuron_circle_loc) # adds neuron
                NeuronIndex += 1
           #Generate hunger and motor neurons
           self.add_neuron("hunger", NeuronIndex, (0,0), self.neuron_circle_loc)
@@ -203,13 +203,13 @@ class Network:
                          rl_array[index[0]][i+5] = lVal # sets the lval
 
           for index in self.neuron_circle_loc['hunger']:
-               rl_array[index[0]][4] = 1
+               rl_array[index[0]][4] = 1    # setting rl arrays for hunger so it gets connected to the right neurons
 
           for index in self.neuron_circle_loc['motor']:
                if index[0] % 2 == 0:
-                    rl_array[index[0]][8] = 1
+                    rl_array[index[0]][8] = 1 # sets the rl array for motor so they are connected only to the excitatory neurons
                if index[0] % 2 != 0:
-                    rl_array[index[0]][9] = 1
+                    rl_array[index[0]][9] = 1 # sets the rl array for motor so they are connected only to the excitatory neurons
 
           #Set up connection weights
           for n1 in self.indices_list:
@@ -218,19 +218,20 @@ class Network:
                     ligand = rl_array[n2]        # sets ligand equal to list of values in array from corresponding indice
                     # if n1 == 41 or n1== 42:
                     #      print receptor[:5], ligand[5:]
-                    W = np.sum( np.multiply(receptor[:5], ligand[5:]))
-                    max_synapse_strength = 30
+                    W = np.sum( np.multiply(receptor[:5], ligand[5:])) # r and l's are multiplied by column. if one has a zero in that column, the column's multiplication is zero. if
+                    #  there are no overlapping nonzero numbers, W will be zero.
+                    max_synapse_strength = 30 # highest value for number in self.S
                     connectionWeight = max_synapse_strength*np.exp(A* W) / (B + np.exp(A*W))
                     ### bring in multiplier from runNetwork
                     if connectionWeight <= 3.0/2.0: connectionWeight = 0
                     rl_array[n1][:5] = receptor[:5]
                     rl_array[n2][5:] = ligand[5:]
-                    self.S[n1][n2] = connectionWeight
+                    self.S[n1][n2] = connectionWeight  # sets connection between two neurons based on a value within that neurons array
 
           # np.set_printoptions(edgeitems= 100)
           # print self.S
           # initialize I
-          self.I = 2*np.ones( (len(self.indices_list)), dtype = np.float32)
+          self.I = 2*np.ones( (len(self.indices_list)), dtype = np.float32) # creates an array for self.I filled with zeros
 
 
      def copyDynamicState(self): # copies all data for simulation engine 
@@ -316,13 +317,13 @@ class Network:
              if self.v[i] >= 30:
                 self.sense_B_fired[i-32] += 1
 
-         self.v[self.fired] = self.c[self.fired]
-         self.u[self.fired] = self.u[self.fired] + self.d[self.fired]
+         self.v[self.fired] = self.c[self.fired] # takes neurons that fired and sets the voltage back to equal c
+         self.u[self.fired] = self.u[self.fired] + self.d[self.fired] # resets the u value of those that fired
          # newI = np.zeros(43,dtype=np.float32)
          # for i in self.fired:
          #     for j in self.S[i]:
          #         newI[j] += (self.S[i][j]*self.voltIncr)
-         newI = np.sum(self.S[self.fired],axis=0)
+         newI = np.sum(self.S[self.fired],axis=0) # gathers the new I of the fired neurons based on their connection weights held in self.S
 
          # tempNewIlista = (newI[self.senseNeurons_A] >= 20).nonzero()[0]
          # tempNewIlistb = (newI[self.senseNeurons_B] >= 20).nonzero()[0]
@@ -330,7 +331,7 @@ class Network:
             # print 'self.S[self.senseNeurons_A]: ', self.S[self.senseNeurons_A]
             # print 'self.S[self.senseNeurons_B]: ', self.S[self.senseNeurons_B]
 
-         self.I = self.kSynapseDecay*self.I + newI
+         self.I = self.kSynapseDecay*self.I + newI  # decays the old value of self.I, and then adds the newI
          self.M1_input_sum = self.M1_input_sum*self.motor_decay     # decays previous motor output by 90%
          self.M1_input_sum += (sum(self.S[self.fired][:,self.motorNeurons[0]]))*.005    # sums input from neurons that fired that are connected to the motor
          print 'M1', self.M1_input_sum
@@ -340,9 +341,9 @@ class Network:
          self.cap_I = (self.I >= 50).nonzero()[0]
          self.I[self.cap_I] = 50
 
+         self.v=self.v+0.5*(0.04*(self.v**2) + 5*self.v + 140-self.u + self.I)  # formulat that alters V based on v, u and i
          self.v=self.v+0.5*(0.04*(self.v**2) + 5*self.v + 140-self.u + self.I)
-         self.v=self.v+0.5*(0.04*(self.v**2) + 5*self.v + 140-self.u + self.I)
-         self.cap_v = (self.v >= 50).nonzero()[0]
+         self.cap_v = (self.v >= 50).nonzero()[0]   # caps v at 50
          self.v[self.cap_v] = 50
 
          self.u=self.u+self.a*(self.b*self.v - self.u)

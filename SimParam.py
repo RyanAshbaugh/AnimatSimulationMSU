@@ -14,7 +14,7 @@ class SimParam():
         #general usage vars
         self.worldParams = {1 : (None,None,None,None)}    #animNum,foodNum,worldSize,foodLocs
         ## Note should change calories to be a food/world param
-        self.animatParams = {1 : (None,None,None,None,None)}  #id, origin, x0, y0, sigma
+        self.animatParams = {1 : (None,None,None,None,None,None)}  #id, origin, R_center, L_center, R_radii, L_radii
 
         #vars for evoDriver usage
         self.worldToRun = 1     #used so World.py knows which world param to extract and use

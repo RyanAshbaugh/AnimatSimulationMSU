@@ -25,14 +25,14 @@ class Animat():
     def __init__(self,(id,origin,R_center,L_center,R_radii,L_radii)):
 
         self.net = NetworkModule.Network(R_center,L_center,R_radii,L_radii)
-        self.net.generateNeurons()
-        self.net.connectNetwork()
+        self.net.generateNeurons()  # generates neurons
+        self.net.connectNetwork()   # connects network
         self.pos = np.array([origin[0], origin[1]])
         self.id = id
-        self.direc = np.pi/2
+        self.direc = np.pi/2    # starts direction facing up
         self.Eating = False
-        self.Energy = 200
-        self.hungerThreshold = .75 * self.Energy
+        self.Energy = 200   # initial amount of energy
+        self.hungerThreshold = .75 * self.Energy    # hunger is at 3/4 of full energy
         self.count = 0  # used for print things out when testing
 
 ##################### Wheel Animat Class ######################################################
@@ -53,7 +53,7 @@ class WheelAnimat(Animat):
 
     def runNetwork(self, t, dt):
         sTime = time.clock()
-        self.net.runNetwork(t, dt)
+        self.net.runNetwork(t, dt)  # runs the network from the NetworkModule
         eTime = time.clock()
         self.benchmark.append(eTime-sTime)
 
@@ -89,15 +89,15 @@ class WheelAnimat(Animat):
     def move(self, trac, t):
         # new proposed method to move the animat
         M1_sum,M2_sum = self.net.getMotorData() # sets M1_sum and M2_sum equal to the adjusted sum from getMotorData()
-        motion_sum = M1_sum + M2_sum
-        new_theta = math.atan(-(M1_sum-M2_sum)/2.4)
-        self.direc = self.direc + (new_theta/4.0)
+        motion_sum = M1_sum + M2_sum    # the total movement of each motor combined
+        new_theta = math.atan(-(M1_sum-M2_sum)/2.4) # new angle from current angle
+        self.direc = self.direc + (new_theta/4.0)   # new angle based on the angle animat is already at
         if not self.Eating:
-            if M1_sum != 0 or M2_sum != 0:
-                self.pos = self.pos + [motion_sum*math.cos(self.direc)*.01, motion_sum*math.sin(self.direc)*.01]
-                self.Energy = self.Energy - (self.cMotionEnergy * motion_sum) - self.kBasalEnergy
+            if M1_sum != 0 or M2_sum != 0:  # if there is any movement at all
+                self.pos = self.pos + [motion_sum*math.cos(self.direc)*.01, motion_sum*math.sin(self.direc)*.01]    # what actually moves the animat forward
+                self.Energy = self.Energy - (self.cMotionEnergy * motion_sum) - self.kBasalEnergy   # reduction in energy from moving
         else:
-            self.pos = self.pos
+            self.pos = self.pos # if it is eating then it's position
             self.Energy = self.Energy - self.kBasalEnergy
 
 
