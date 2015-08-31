@@ -1,0 +1,19 @@
+#!/bin/bash --login
+#PBS -l nodes=6:ppn=1,walltime=02:00:00,mem=4000mb
+#PBS -l feature=gbe
+#PBS -j oe
+
+cd ${PBS_O_WORKDIR}
+
+module load python
+module load NumPy
+module load SciPy
+
+cat ${PBS_NODEFILE} | tee /mnt/home/ashbau12/test_branch/nodefile.txt
+temp_nodelist=$(awk '{printf("%s,",$0)}' $PBS_NODEFILE)
+hostnode=`hostname -a`
+nodelist=${temp_nodelist//${hostnode},/}
+
+pdsh -w $nodelist /mnt/research/neuro_animat/Python/Python_2.7.2/testpy/pp-1.6.4/ppserver.py -a -p 35000 &
+
+python EvoDriver.py

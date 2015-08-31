@@ -1,0 +1,12 @@
+#!/bin/bash -login
+#PBS -l walltime=00:05:00,nodes=1:ppn=1
+#PBS -l feature=gbe
+#PBS -j oe
+
+echo jobstart
+module load Python/2.7.2
+module load NumPy
+module load SciPy
+
+ml
+echo jobend
