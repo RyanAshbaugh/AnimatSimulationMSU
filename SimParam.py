@@ -14,7 +14,7 @@ class SimParam():
         #general usage vars
         self.worldParams = {1 : (None,None,None,None)}    #animNum,foodNum,worldSize,foodLocs
         ## Note should change calories to be a food/world param
-        self.animatParams = {1 : (None,None,None,None,None)}  #id, origin, x0, y0, sigma
+        self.animatParams = {1 : (None,None,None,None,None,None)}  #id, origin, R_center, L_center, R_radii, L_radii
 
         #vars for evoDriver usage
         self.worldToRun = 1     #used so World.py knows which world param to extract and use
@@ -69,16 +69,26 @@ class SimParam():
         self.animatParams[id] = (temp[0],temp[1],R_center,temp[3],temp[4],temp[5])
 
     def setL_center(self,id,L_center):
-        temp = self.animatParams[id]
+	temp = self.animatParams[id]
         self.animatParams[id] = (temp[0],temp[1],temp[2],L_center,temp[4],temp[5])
 
-    def setR_radii(self,id,R_radii):
+    def setR_radii(self,id,R_radii):        
         temp = self.animatParams[id]
         self.animatParams[id] = (temp[0],temp[1],temp[2],temp[3],R_radii,temp[5])
 
     def setL_radii(self,id,L_radii):
         temp = self.animatParams[id]
         self.animatParams[id] = (temp[0],temp[1],temp[2],temp[3],temp[4],L_radii)
+
+  #  def setR_radii(self,id,R_radii):
+  #      print 'setR_radii: ', R_radii
+#	temp = self.animatParams[id]
+#        self.animatParams[id] = (temp[0],temp[1],temp[2],temp[3],R_radii,temp[5])
+#
+ #   def setL_radii(self,id,L_radii):
+ #       print 'setL_radii: ', L_radii
+#	temp = self.animatParams[id]
+ #       self.animatParams[id] = (temp[0],temp[1],temp[2],temp[3],temp[4],L_radii)
 
     # def setX0(self,id,x0):
     #     temp = self.animatParams[id]

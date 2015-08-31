@@ -8,6 +8,7 @@ import pp
 import clusterSimEngine
 import SimParam
 import random
+import os
 
 
 class ClusterDriver():
@@ -48,10 +49,11 @@ class EvoClusterDriver():
 
     def initializeSims(self):
         for i,sP in enumerate(self.simParams):
-            self.sims.append(Simulation(self.id,i,sP,60000,writeInterval=25,evo=True))
+            self.sims.append(Simulation(self.id,i,sP,5000,writeInterval=25,evo=True))
 
     def startNode(self):
-        print "Node " + str(self.id) + " starting"
+        print os.environ["HOSTNAME"]
+	print "Node " + str(self.id) + " starting"
         js = pp.Server()    #create local server for SMP execution
         jobs = [js.submit(sim.startSimulation,args=(self.metrics,),modules=("clusterDriver","SimParam")) for sim in self.sims] #submit all jobs to server
         #NOTE in below, callback in Simulation object should fill results, not the function call
@@ -185,9 +187,9 @@ class Simulation():
 
 
     def printStartupInfo(self):
-        print "Animat Cluster Simulation started\n"
-        print "Simulation Length: " + str(float(self.runTime)/60000.0) + " simulated minutes\n"
-        print "Write Interval: " + str(float(self.writeInterval)/1000.0) + " simulated seconds\n"
+	print "Animat Cluster Simulation started\n"
+        # print "Simulation Length: " + str(float(self.runTime)/60000.0) + " simulated minutes\n"
+        # print "Write Interval: " + str(float(self.writeInterval)/1000.0) + " simulated seconds\n"
 
 
 

@@ -5,6 +5,7 @@ Simulates brain, contains all neurons
 
 
 
+ #IAM JAMES
 '''
 
 from NeuronModule import InhibitoryNeuron
@@ -18,17 +19,18 @@ import numpy as np
 import random
 import SimParam
 import inspect
+import os
 
 class Network:
 
     #kwargs used for evo driver
      def __init__(self,R_center,L_center,R_radii,L_radii): # mixture of neuron parameters and initializing network numbers
          #some constants/tracking numbers
-         print 'this is the Test_branch'
+         print 'this is the Test_branch', os.environ["HOSTNAME"]
          # print inspect.stack()
          self.FIRED_VALUE = 30 # mV
          self.DT = 1 # ms
-         self.numExcitatory = 0 # number of each type of neuron
+         self.numExcitatory = 0
          self.numInhibitory = 0
          self.numMotor = 0
          self.numSensory_A = 0
@@ -40,34 +42,33 @@ class Network:
          self.K = 5
          self.sense_B_fired = [0 for i in range(10)]
          self.sense_A_fired = [0 for i in range(10)]
-         self.M1_fp = [0,0,0,0,0,0,0,0] # firing pattern of the M1 motor over the last 8 iterations (1 or 0)
-         self.M2_fp = [0,0,0,0,0,0,0,0] # firing pattern of the M2 motor over the last 8 iterations
-         self.M1adjusted = [0,0,0,0,0,0,0,0] # firing pattern of the M1 motor over the last 8 iterations adjusted based on 30% decay each iteration
-         self.M2adjusted = [0,0,0,0,0,0,0,0] # firing pattern of the M2 motor over the last 8 iterations adjusted based on 30% decay each iteration
+         self.M1_fp = [0,0,0,0,0,0,0,0]
+         self.M2_fp = [0,0,0,0,0,0,0,0]
+         self.M1adjusted = [0,0,0,0,0,0,0,0]
+         self.M2adjusted = [0,0,0,0,0,0,0,0]
          self.count = 0
          self.motor_neuron1_count = 0
          self.motor_neuron2_count = 0
 
 
          if R_center == None: # if no values are passed in (unusual) then set up some random - may want to remove this
+             # self.x0 = [[np.random.random_sample()*3.01 - 1.5 for x in xrange(self.K)] for x in xrange(self.L)]
+             # self.y0 = [[np.random.random_sample()*3.01 - 1.5 for x in xrange(self.K)] for x in xrange(self.L)]
+             # self.sigma = [[np.random.exponential() for x in xrange(self.K)] for x in xrange(self.L)]
+             # self.sigma = [[1.0, 1.0, 0.0, 1.0, 1.0], [1.0, 1.0, 1.5, 0.0, 0.0]]
+             # self.x0 = [[-1.0, 1.0, 0.0, 0.7, -0.7], [-1.0, 1.0, 0.0, 0.0, 0.0]]
+             # self.y0 = [[1.0, 1.0, 0.0, -0.7, -0.7], [-1.0, -1.0, -1.0, 0.0, 0.0]]
 
-             # self.R_center = [[-.7,.7],[.7,.7],[.7,-.7],[-.7,-.7], [0,0]]
-             # self.L_center = [[.7,-.7],[-.7,-.7],[1.2,0],[-1.2,0],[0,-1] ]
-             # self.R_radii = [1.0,1.0,1.0,1.0,.5]
-             # self.L_radii = [1.0,1.0,.15,.15,1]
-             self.R_center = [[random.randrange(-1000,1000,1)/1000,random.randrange(-1000,1000,1)/1000] for x in range(5)]
-             self.L_center = [[random.randrange(-1000,1000,1)/1000,random.randrange(-1000,1000,1)/1000] for x in range(5)]
-             self.R_radii = (i, [1.0,1.0,1.0,1.0,.5])
-             self.L_radii = (i, [1.0,1.0,.15,.15,1])
+             self.R_center = [[-.7,.7],[.7,.7],[.7,-.7],[-.7,-.7], [0,0]]
+             self.L_center = [[.7,-.7],[-.7,-.7],[1.2,0],[-1.2,0],[0,-1] ]
+             self.R_radii = [1.0,1.0,1.0,1.0,.5]
+             self.L_radii = [1.0,1.0,.15,.15,1]
 
          else:
              self.R_center = R_center
              self.L_center = L_center
              self.R_radii = R_radii
              self.L_radii = L_radii
-             # self.x0 = x0
-             # self.y0 = y0
-             # self.sigma = sigma
 
 
          #Izhikevich Variables ... do we need 32-bit numbers? try np.float16?

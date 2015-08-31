@@ -1,4 +1,4 @@
-__author__ = 'RJ'
+uthor__ = 'RJ'
 '''
 
 Driver for use when using evolutionary algorithm
@@ -60,11 +60,12 @@ class EvoDriver():
         lines = [(line.rstrip('\n')+":35000") for line in open('nodefile.txt')]
 
         # tuple of all parallel python servers to connect with
-        ppservers = (lines[i+1] for i in range(len(lines)))
-        #ppservers = ("10.0.0.1",)
+        # ppservers = (lines[i+1] for i in range(len(lines)))
+	# print ppservers        
+#ppservers = ("10.0.0.1",)
 
         # Creates jobserver with automatically detected number of workers
-        self.js = pp.Server(ncpus=1,ppservers=ppservers)
+        self.js = pp.Server(ncpus=1,ppservers=tuple(lines))
         # print "Starting pp with", job_server.get_ncpus(), "workers"
 
         ## Setup
@@ -320,3 +321,4 @@ class EvoDriver():
 
 
 ed = EvoDriver()
+

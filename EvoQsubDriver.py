@@ -57,15 +57,15 @@ class EvoQsubDriver():
 	try:
             number_of_gens = int(sys.argv[2]) # used to allow specification for the number of generations from command line
         except IndexError:
-            number_of_gens = 1 # default if none given
+            number_of_gens = 10 # default if none given
 	try:
             self.gen_size = int(sys.argv[3]) # used to allow generation size specification for number of animats in generations after the first gen from command line
         except IndexError:
-            self.gen_size = 10 # default if none given
+            self.gen_size = 100 # default if none given
 	try:
             first_gen_size = int(sys.argv[4]) # used to allow  specification for the number of animats from command line
         except IndexError:
-            first_gen_size = 10 # default if none given
+            first_gen_size = 200 # default if none given
 	# print 'simLength', simLength
 
 	results = [] # initialized empty results
@@ -85,48 +85,68 @@ class EvoQsubDriver():
 		simulate_args_outfile = open('%s/animat_%s/sim_args/sim_args_%d.txt' % (self.current_dir, self.current_time, x),'wb') # create file to pickle.dump 
         	pickle.dump(simulate_args, simulate_args_outfile) # dump simparam object in file
         	simulate_args_outfile.close() # closes file
-		results = animat_qsub_writer.write_qsub(x,self.current_time,self.current_dir,simLength) # calls animat_qsub_writer for all animats
-	end_time = time.time() # end time
-        sim_time = end_time-initial_time
+		results = animat_qsub_writer.write_qsub(x,self.current_time,self.current_dir,self.simLength) # calls animat_qsub_writer for all animats
 	# print 'EvoQsubDriver complete'
         # print 'Entire Simulation Time: ', sim_time
 	while not SimulationComplete: # while the simulation is not yet completed
 	    current_sim_results = self.dir_count('%s/animat_%s/sim_results' % (self.current_dir, self.current_time))
 	    total_sims_completed = current_sim_results[0] # all animats completed regardless of generation
+	    print '\ntotal_sims_completed: ', total_sims_completed
 	    if self.gen_counter == 1:
 		sims_completed = total_sims_completed
 		gen_percent = float(sims_completed)/float(first_gen_size)
 	    else:
-		sims_completed == (total_sims_completed-first_gen_size)-(gen_size*(gen_counter-2)) # gives the number is animats completed within a generation
-		gen_percent = float(sims_completed)/float(gen_size) # percentage of the generation completed
-	    print 'gen_percent', gen_percent
+		#print 'gen_counter != 1'
+		#print 'total_sims_completed: ', total_sims_completed
+		#print 'first_gen_size: ', first_gen_size
+		#print 'float(self.gen_size): ', float(self.gen_size)
+		#print 'self.gen_counter: ', self.gen_counter
+		if total_sims_completed - first_gen_size < 0:
+		    temp_first_gen = 0
+		else:
+		    temp_first_gen = total_sims_completed - first_gen_size
+		sims_completed = temp_first_gen -(self.gen_size*(self.gen_counter-2)) # gives the number of animats completed within a generation
+		gen_percent = float(sims_completed)/float(self.gen_size) # percentage of the generation completed
+		#print 'float(sims_completed): ', float(sims_completed)
+	    print '%d gen_percent: ' % self.gen_counter, gen_percent*100, '%'
 	    time.sleep(30) # makes loop essentially run every 30 seconds
-	    print 'total_sims_completed', total_sims_completed
-	    if total_sims_completed == first_gen_size + (gen_size*number_of_gens): # checks to see if every animat is complete
-		SimulationComplete = True
-		print 'Simulation has completed successfully'
-		break
 	    if gen_percent >= .8:
 		sims_file_list = current_sim_results[1] # list of all completed animat results	
 		for result in sims_file_list:
 		    result_id = re.findall('\d+',result) # finds the id of the specific result file
 		    temp_results_id = [self.results[i][0] for i in range(len(self.results))]
-		    if int(result_id[0]) in temp_results_id: # checks whether already in self.results or not
+		    if int(result_id[0]) not in temp_results_id: # checks whether already in self.results or not
 			results_file = open('%s/animat_%s/sim_results/%s' % (self.current_dir, self.current_time, result), 'rb')
 		    	results_list = pickle.load(results_file)
 		    	self.results.append(results_list)
 		self.rankAnimats()
 		self.run()
+		gen_percent = 0
 		self.gen_counter += 1
+	    if self.gen_counter == number_of_gens: # checks to see if on last generation
+                while gen_percent < .8:
+		    time.sleep(30)
+		    current_sim_results = self.dir_count('%s/animat_%s/sim_results' % (self.current_dir, self.current_time))
+            	    total_sims_completed = current_sim_results[0] # all animats completed regardless of generation
+            	    print '\ntotal_sims_completed: ', total_sims_completed
+		    temp_first_gen = total_sims_completed - first_gen_size
+                    sims_completed = temp_first_gen -(self.gen_size*(self.gen_counter-2)) # gives the number of animats completed within a generation
+		    gen_percent = float(sims_completed)/float(self.gen_size)
+		    print '%d gen_percent: ' % self.gen_counter, gen_percent*100, '%'
+		SimulationComplete = True
+		self.rankAnimats()
+		end_time = time.time() # end time
+		sim_time = int(end_time-initial_time)
+                sim_time_hms = time.strftime("%H:%M:%S", time.gmtime(sim_time))
+	print 'Simulation has completed successfully in ', sim_time_hms, ' seconds'
 
 
-    def dir_count(self,dir):  # counts the number of files in directory
-	print '\ndir_count'
+
+    def dir_count(self,dir):  # counts the number of files in directory	
 	os.chdir(dir)
 	files_str = subprocess.check_output(['ls','-1'])
 	os.chdir(self.current_dir)
 	files_list = [word for word in files_str.split()]
-	print 'files_list:\n', files_list
 	num_files = len(files_list)	
 	return [num_files,files_list]
 
@@ -166,7 +186,8 @@ class EvoQsubDriver():
         genData = []
         scores = {}    #dictionary of scores with ids as keys
         #calculate score based on each metric
-        for metric in self.toTrack:
+        mean_file = open('%s/animat_%s/gen_means.txt' % (self.current_dir, self.current_time), 'a')
+	for metric in self.toTrack:
             #build list of all results for this metric
             results = [(id,result[metric]) for id,result in self.results]
             #use simulation results to calculate max,min,mean,std so that evo performance can be tracked
@@ -174,7 +195,9 @@ class EvoQsubDriver():
             minResult = min(results, key= lambda x: x[1])[1]
             mean = np.mean(results,axis=0)[1]
             sd = np.std(results,axis=0)[1]
-            for id,result in results:
+	    rank_results = '%d %s: [maxResult: %d, minResult: %d, mean: %d, sd: %d]\n' % (self.gen_counter,metric,int(maxResult),int(minResult),int(mean),int(sd))
+	    mean_file.write(rank_results)
+	    for id,result in results:
                 try:
                     if metric == "TotalMove": pass               #Total movement is recorded but not used to rank animats
                     elif (metric == "NetworkDensity") or (metric == "FiringRate"):
@@ -191,6 +214,7 @@ class EvoQsubDriver():
                         scores[id] = (result-mean)/sd            #score is sum of z scores for all metrics
                         #print "else: ",scores[id],"\n"
             genData.append((metric,maxResult,minResult,mean,sd,scores))
+	mean_file.close
 	#print 'old id order: ',[sP.getID(1) for sP in self.animats]
 	self.sorted_animats = self.sortByScores(scores) # sorts animats based scores
         self.genData.append(genData)
@@ -206,47 +230,48 @@ class EvoQsubDriver():
                 if sP.getID(1) == id[0]:
                     newAnim.append(sP)
                     break
-        newAnim.reverse()
-	print 'new id order: ',[sP.getID(1) for sP in newAnim]
+        newAnim.reverse()	
 	return newAnim
 
 
     #takes in list of animats, then returns list of mutated animats
     def mutate(self,animats):
         print "Mutating"
-        #Random mutation for first 50
+        #Random mutation for first half
         randMut = []
+	randMut_before = []
         recomb_list = []
 
 	# splices top animats into every other one for the 2 mutations
-	for i in xrange(animat):
+	for i in xrange(self.gen_size):
 	    if i %2 == 0:
-		ranMut.append(animats[i])
+		randMut_before.append(animats[i])
 	    else:
 		recomb_list.append(animats[i])
 
 	# random mutation selection
-	for i in xrange(randMut):
+	for i in xrange(len(randMut_before)):
 	    # either increment or decrement
 	    choice = random.choice((-1,1))
 	    # how much to change the param
 	    randMut_change = .1 * choice
-	    randMutR_center = randMut[i].getR_center(1)
-	    randMutL_center = randMut[i].getL_center(1)
-
+	    randMutR_center = randMut_before[i].getR_center(1)
+	    randMutL_center = randMut_before[i].getL_center(1)
+	    randMutR_radii = randMut_before[i].getR_radii(1)
+	    randMutL_radii = randMut_before[i].getL_radii(1)
 	    # how to randomly decide which param gets changed
 	    selection = random.randint(0,9)
-	    if selection <= 5:
-		randMutR_center[selection] += ranMut_change
-		randMut[i].setR_center(1,randMutR_center)
+	    if selection < 5:
+		randMutR_center[selection][0] += randMut_change
+		randMutR_center[selection][1] += randMut_change
 	    else:
-		randMutL_center[selection-5] += ranMut_change
-		ranMut[i].setL_center(1,ranMutL_center)
-       # self.generateParams(randMut,self.newGenSize/2)
-        #Random recombination for last 50
+		randMutL_center[selection-5][0] += randMut_change
+		randMutL_center[selection-5][1] += randMut_change
+       	    self.generateParams(randMut,1,randMutR_center,randMutL_center,randMutR_radii,randMutL_radii)
+        #Random recombination for last half
         #Combines aa,bb
         recomb = []
-        for i in xrange(recomb_list):
+        for i in xrange(len(recomb_list)):
             r1 = random.randint(0,len(recomb_list)-1)
             r2 = random.randint(0,len(recomb_list)-1)
             newR_center = recomb_list[r1].getR_center(1)
@@ -254,21 +279,20 @@ class EvoQsubDriver():
             newL_center = recomb_list[r2].getL_center(1)
             newL_radii = recomb_list[r2].getL_radii(1)
 
-            # newx0 = self.animats[r1].getX0(1)   #hardcoded for 1 animat per sim
-            # newy0 = self.animats[r2].getY0(1)   #hardcoded for 1 animat per sim
-            # newsigma = self.animats[r2].getSigma(1)
-            self.generateParams(recomb,1,newR_center,newR_radii,newL_center,newL_radii)
+            self.generateParams(recomb,1,newR_center,newL_center,newR_radii,newL_radii)
         return randMut+recomb
 
 
     def run(self):
-	self.new_animats = self.mutate(self.sorted_animats[0:gen_size]) # list containing mutated simparam objects
+	self.new_animats = self.mutate(self.sorted_animats[0:self.gen_size]) # list containing mutated simparam objects
+	print 'starting new gen'
 	gen_animats = [sP.getID(1) for sP in self.new_animats] # ids of all the animats in current generation 
 	for x in gen_animats: # goes through all of the animats in a generation
-                simulate_args = self.new_animats[x-1] # finds the simparam object for the animat id
-                simulate_args_outfile = open('%s/animat_%s/sim_args/sim_args_%d.txt' % (self.current_dir, self.current_time, x),'wb') # create file to pickle.dump 
-                pickle.dump(simulate_args, simulate_args_outfile) # dump simparam object in file
-                simulate_args_outfile.close() # closes file
-                results = animat_qsub_writer.write_qsub(x,self.current_time,self.current_dir,simLength) # calls animat_qsub_writer for all animats	
+            y = x % self.gen_size 
+	    simulate_args = self.new_animats[y-1] # finds the simparam object for the animat id
+            simulate_args_outfile = open('%s/animat_%s/sim_args/sim_args_%d.txt' % (self.current_dir, self.current_time, x),'wb') # create file to pickle.dump 
+            pickle.dump(simulate_args, simulate_args_outfile) # dump simparam object in file
+            simulate_args_outfile.close() # closes file
+            results = animat_qsub_writer.write_qsub(x,self.current_time,self.current_dir,self.simLength) # calls animat_qsub_writer for all animats	
 
 evoqsubdriver = EvoQsubDriver() # call EvoQsubDriver

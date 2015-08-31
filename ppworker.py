@@ -29,6 +29,8 @@ Parallel Python Software, PP Worker
 http://www.parallelpython.com - updates, documentation, examples and support
 forums
 """
+import clusterDriver
+import SimParam
 import sys
 import os
 import StringIO
