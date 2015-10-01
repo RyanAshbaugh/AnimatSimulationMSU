@@ -96,9 +96,10 @@ class WheelAnimat(Animat):
             if M1_sum != 0 or M2_sum != 0:  # if there is any movement at all
                 self.pos = self.pos + [motion_sum*math.cos(self.direc)*.01, motion_sum*math.sin(self.direc)*.01]    # what actually moves the animat forward
                 self.Energy = self.Energy - (self.cMotionEnergy * motion_sum) - self.kBasalEnergy   # reduction in energy from moving
-        else:
-            self.pos = self.pos # if it is eating then it's position
-            self.Energy = self.Energy - self.kBasalEnergy
+            else:
+                self.pos = self.pos # if it is eating then it's position
+                self.Energy = self.Energy - self.kBasalEnergy
+                print self.Energy
 
 
 

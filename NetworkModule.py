@@ -60,18 +60,17 @@ class Network:
 
 
          if R_center == None: # if no values are passed in (unusual) then set up some random - may want to remove this
-             # self.x0 = [[np.random.random_sample()*3.01 - 1.5 for x in xrange(self.K)] for x in xrange(self.L)]
-             # self.y0 = [[np.random.random_sample()*3.01 - 1.5 for x in xrange(self.K)] for x in xrange(self.L)]
-             # self.sigma = [[np.random.exponential() for x in xrange(self.K)] for x in xrange(self.L)]
-             # self.sigma = [[1.0, 1.0, 0.0, 1.0, 1.0], [1.0, 1.0, 1.5, 0.0, 0.0]]
-             # self.x0 = [[-1.0, 1.0, 0.0, 0.7, -0.7], [-1.0, 1.0, 0.0, 0.0, 0.0]]
-             # self.y0 = [[1.0, 1.0, 0.0, -0.7, -0.7], [-1.0, -1.0, -1.0, 0.0, 0.0]]
-
-             self.R_center = [[random.randrange(-1000,1000,1)/1000,random.randrange(-1000,1000,1)/1000] for x in range(5)] # method for setting R_center to random number between -1
+             self.R_center = [[random.randrange(-1000,1000,1)/1000.0,random.randrange(-1000,1000,1)/1000.0] for x in range(5)] # method for setting R_center to random number between -1
              # and 1
-             self.L_center = [[random.randrange(-1000,1000,1)/1000,random.randrange(-1000,1000,1)/1000] for x in range(5)]
+             self.L_center = [[random.randrange(-1000,1000,1)/1000.0,random.randrange(-1000,1000,1)/1000.0] for x in range(5)]
              self.R_radii = [1.0,1.0,1.0,1.0,.5] # sets the locatins for the R_radii
              self.L_radii = [1.0,1.0,.15,.15,1] # sets the locations for the L_radii
+
+         # self.R_center = [(0,0),(-1,-1),(-1,-1),(-1,-1),(-1,-1)]
+         # # and 1
+         # self.L_center = [(0,-1),(-1,-1),(0,-1),(0,-1),(-1,-1)]
+         # self.R_radii = [1.0,1.0,1.0,1.0,.5] # sets the locatins for the R_radii
+         # self.L_radii = [1.0,1.0,.15,.15,1] # sets the locations for the L_ra
 
          else:
              # if R & L center and radii are passed in then these values are set to equal the passed in args
@@ -79,9 +78,7 @@ class Network:
              self.L_center = L_center
              self.R_radii = R_radii
              self.L_radii = L_radii
-             # self.x0 = x0
-             # self.y0 = y0
-             # self.sigma = sigma
+
 
 
          # arrays used for the sense neurons
