@@ -66,12 +66,6 @@ class Network:
              self.R_radii = [1.0,1.0,1.0,1.0,.5] # sets the locatins for the R_radii
              self.L_radii = [1.0,1.0,.15,.15,1] # sets the locations for the L_radii
 
-         # self.R_center = [(0,0),(-1,-1),(-1,-1),(-1,-1),(-1,-1)]
-         # # and 1
-         # self.L_center = [(0,-1),(-1,-1),(0,-1),(0,-1),(-1,-1)]
-         # self.R_radii = [1.0,1.0,1.0,1.0,.5] # sets the locatins for the R_radii
-         # self.L_radii = [1.0,1.0,.15,.15,1] # sets the locations for the L_ra
-
          else:
              # if R & L center and radii are passed in then these values are set to equal the passed in args
              self.R_center = R_center
@@ -194,8 +188,8 @@ class Network:
                          #lVal = random.random()
                          if rVal < 0.0: rVal = 0.0 # if below zero, set to zero
                          if lVal < 0.0: lVal = 0.0
-                         print 'rVal', rVal
-                         print 'lVal', lVal
+                         # print 'rVal', rVal
+                         # print 'lVal', lVal
                          rl_array[index[0]][i] = rVal # sets the rval
                          rl_array[index[0]][i+5] = lVal # sets the lval
 
@@ -225,10 +219,8 @@ class Network:
                     rl_array[n2][5:] = ligand[5:]
                     self.S[n1][n2] = connectionWeight  # sets connection between two neurons based on a value within that neurons array
 
-          # np.set_printoptions(edgeitems= 100)
-          # print self.S
           # initialize I
-          self.I = 2*np.ones( (len(self.indices_list)), dtype = np.float32) # creates an array for self.I filled with zeros
+          self.I = 2*np.ones( (len(self.indices_list)), dtype = np.float32) # creates an array for self.I filled with 2s
 
 
      def copyDynamicState(self): # copies all data for simulation engine 
@@ -283,27 +275,7 @@ class Network:
              self.attribute_list.append([i, self.indices_location[i], self.a, self.b, self.v, self.c, self.d, self.u])
          return self.attribute_list
 
-
-
-         #     self.indices_list[i].index = i
-         #     self.indices_list[i].a = self.a[i]
-         #     self.indices_list[i].b = self.b[i]
-         #     self.indices_list[i].membranePotential = self.v[i]
-         #     self.indices_list[i].c = self.c[i]
-         #     self.indices_list[i].d = self.d[i]
-         #     self.indices_list[i].u = self.u[i]
-         #
-         # return self.indices_list
-
-
      def runNetwork(self,t,dt): # runs Izhikevich model code
-
-         # print '{:36s}{:2s}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}{:12.4f}'.format('self.v[self.senseNeurons_A1]',': '\
-         #                                                                                                            ,self.v[self.senseNeurons_A][0],self.v[self.senseNeurons_A][1],self.v[self.senseNeurons_A][2]\
-         #                                                                                                            ,self.v[self.senseNeurons_A][3],self.v[self.senseNeurons_A][4],self.v[self.senseNeurons_A][5]\
-         #                                                                                                            ,self.v[self.senseNeurons_A][6],self.v[self.senseNeurons_A][7],self.v[self.senseNeurons_A][8]\
-         #                                                                                                            ,self.v[self.senseNeurons_A][9])
-
 
          self.fired = (self.v >= 30).nonzero()[0] # .nonzero() returns indices from 1/0 (T/F) of v >= 30
 
@@ -316,17 +288,7 @@ class Network:
 
          self.v[self.fired] = self.c[self.fired] # takes neurons that fired and sets the voltage back to equal c
          self.u[self.fired] = self.u[self.fired] + self.d[self.fired] # resets the u value of those that fired
-         # newI = np.zeros(43,dtype=np.float32)
-         # for i in self.fired:
-         #     for j in self.S[i]:
-         #         newI[j] += (self.S[i][j]*self.voltIncr)
          newI = np.sum(self.S[self.fired],axis=0) # gathers the new I of the fired neurons based on their connection weights held in self.S
-
-         # tempNewIlista = (newI[self.senseNeurons_A] >= 20).nonzero()[0]
-         # tempNewIlistb = (newI[self.senseNeurons_B] >= 20).nonzero()[0]
-         # if len(tempNewIlista)>0 or len(tempNewIlistb)>0:
-            # print 'self.S[self.senseNeurons_A]: ', self.S[self.senseNeurons_A]
-            # print 'self.S[self.senseNeurons_B]: ', self.S[self.senseNeurons_B]
 
          self.I = self.kSynapseDecay*self.I + newI  # decays the old value of self.I, and then adds the newI
          self.M1_input_sum = self.M1_input_sum*self.motor_decay     # decays previous motor output by 90%
